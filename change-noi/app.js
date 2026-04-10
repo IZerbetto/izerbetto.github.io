@@ -139,8 +139,8 @@ function setNav({ backVisible, nextVisible, nextLabel, nextFull, backDisabled })
   el.nextBtn.style.display = nextVisible ? "inline-flex" : "none";
   el.nextBtn.textContent = nextLabel ?? "Avanti";
   el.backBtn.disabled = Boolean(backDisabled);
-  el.nextBtn.classList.toggle("full", Boolean(nextFull));
-  el.backBtn.classList.toggle("full", false);
+  // el.nextBtn.classList.toggle("full", Boolean(nextFull));
+  // el.backBtn.classList.toggle("full", false);
 }
 
 function escapeHtml(s) {
@@ -201,12 +201,11 @@ function renderQuestion(categoryIndex, questionIndex, qNumber) {
   const extra = (q.extra || "").trim();
   el.content.innerHTML = `
     <div class="question">${escapeHtml(q.text)}</div>
-    ${
-      extra
-        ? `<div class="extra"><div class="label">Extra</div><div>${escapeHtml(
-            extra
-          )}</div></div>`
-        : ""
+    ${extra
+      ? `<div class="extra"><div class="label">Extra</div><div>${escapeHtml(
+        extra
+      )}</div></div>`
+      : ""
     }
   `;
 
