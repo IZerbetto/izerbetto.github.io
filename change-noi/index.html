@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#FFDE59" />
+    <title>Change NOI</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="viewport">
+      <section class="card" id="card" aria-live="polite">
+        <img class="logo" src="./ChangeNOI.png" width="160" height="160" alt="Change NOI" />
+        <div class="topline">
+          <div class="crumb" id="crumb" aria-hidden="true"></div>
+          <div class="progress" id="progress" aria-hidden="true"></div>
+        </div>
+
+        <h1 class="title" id="title"></h1>
+        <p class="subtitle" id="subtitle"></p>
+
+        <div class="content" id="content"></div>
+      </section>
+    </main>
+
+    <nav class="nav" aria-label="Navigazione">
+      <button class="btn secondary" id="backBtn" type="button">Indietro</button>
+      <button class="btn primary" id="nextBtn" type="button">Avanti</button>
+    </nav>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
