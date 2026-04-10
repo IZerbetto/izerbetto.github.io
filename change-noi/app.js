@@ -11,8 +11,8 @@ const categories = [
           "Difendi la tua scelta come se fosse una verità scientifica assoluta. Alla fine votate chi ha convinto di più.",
       },
       {
-        text: "Se fossi un panino, cosa ci sarebbe dentro e perché?",
-        extra: "Scegliete il panino più strano del tavolo.",
+        text: "Se fossi un panino, cosa ci sarebbe dentro?",
+        extra: "",
       },
       {
         text: "Qual è il talento più inutile che hai?",
@@ -34,7 +34,6 @@ const categories = [
         text: "Qual è una cosa che ti appassiona davvero tanto?",
         extra: "Se qualcuno condivide la stessa passione, fatelo notare.",
       },
-      { text: "Come ti descriverebbe un tuo amico stretto?", extra: "" },
       {
         text: "Qual è una cosa che vuoi assolutamente fare nei prossimi 2 anni?",
         extra: "",
@@ -46,7 +45,6 @@ const categories = [
     description: "Per andare un po’ più in profondità",
     questions: [
       { text: "Qual è un momento che ti ha fatto crescere?", extra: "" },
-      { text: "Quando ti senti davvero te stesso/a?", extra: "" },
       { text: "Qual è una cosa che ti dà energia nella vita?", extra: "" },
     ],
   },
@@ -71,10 +69,9 @@ const categories = [
     description: "Immaginare e costruire insieme",
     questions: [
       { text: "Come immagini un circolo ideale per i giovani?", extra: "" },
-      { text: "Perché secondo voi oggi i giovani partecipano poco?", extra: "" },
       {
         text: "Che tipo di attività funzionerebbero davvero?",
-        extra: "Scegliete le 2 idee migliori del tavolo.",
+        extra: "",
       },
     ],
   },
