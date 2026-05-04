@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
       margin: 25px 0;
       align-items: start;
     }
+
     .stego-image-wrapper {
       background: var(--bg-darker);
       border: 2px solid var(--border-glow);
@@ -20,12 +22,14 @@
       padding: 10px;
       overflow: hidden;
     }
+
     .stego-image-wrapper img {
       width: 100%;
       display: block;
       border-radius: 8px;
       transition: filter 0.1s;
     }
+
     .stego-controls {
       background: rgba(0, 0, 0, 0.5);
       border: 2px solid var(--neon-cyan);
@@ -34,6 +38,7 @@
       position: sticky;
       top: 20px;
     }
+
     .stego-controls h3 {
       color: var(--neon-cyan);
       margin-top: 0;
@@ -41,9 +46,11 @@
       font-size: 1em;
       letter-spacing: 2px;
     }
+
     .control-group {
       margin-bottom: 18px;
     }
+
     .control-group label {
       display: flex;
       justify-content: space-between;
@@ -52,13 +59,16 @@
       letter-spacing: 1px;
       margin-bottom: 6px;
     }
+
     .control-group label span {
       color: var(--neon-yellow);
     }
+
     .control-group input[type="range"] {
       width: 100%;
       accent-color: var(--neon-cyan);
     }
+
     .reset-btn {
       width: 100%;
       padding: 10px;
@@ -72,19 +82,23 @@
       letter-spacing: 1px;
       transition: all 0.2s;
     }
+
     .reset-btn:hover {
       background: rgba(255, 46, 154, 0.1);
     }
+
     @media (max-width: 800px) {
       .stego-workspace {
         grid-template-columns: 1fr;
       }
+
       .stego-controls {
         position: static;
       }
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <div id="header"></div>
@@ -95,13 +109,18 @@
 
       <div class="narration">
         <p>Ultima prova, agenti! 🔥</p>
-        <p>Nyx ha inviato ai suoi complici una <strong>foto apparentemente innocua</strong>. Ma le immagini possono nascondere molto più di quello che si vede a occhio nudo: questa tecnica si chiama <strong>steganografia</strong>.</p>
-        <p>Dentro questa immagine c'è una <strong>parola nascosta</strong>. Devi rivelarla per ottenere l'ultimo codice.</p>
+        <p>Nyx ha inviato ai suoi complici una <strong>foto apparentemente innocua</strong>. Ma le immagini possono
+          nascondere molto più di quello che si vede a occhio nudo: questa tecnica si chiama
+          <strong>steganografia</strong>.
+        </p>
+        <p>Dentro questa immagine c'è una <strong>parola nascosta</strong>. Devi rivelarla per ottenere l'ultimo codice.
+        </p>
       </div>
 
       <div class="tip-box">
         <h4>💡 COME RIVELARE IL MESSAGGIO</h4>
-        <p>A occhio nudo non si vede niente di chiaro... ma puoi <strong>modificare contrasto, luminosità e saturazione</strong> con i comandi a destra dell'immagine. Sposta gli slider e vedi cosa appare!</p>
+        <p>A occhio nudo non si vede niente di chiaro... ma puoi <strong>modificare contrasto, luminosità e
+            saturazione</strong> con i comandi a destra dell'immagine. Sposta gli slider e vedi cosa appare!</p>
       </div>
 
       <div class="stego-workspace">
@@ -114,7 +133,7 @@
 
           <div class="control-group">
             <label>CONTRASTO <span id="contrastVal">100%</span></label>
-            <input type="range" id="contrast" min="100" max="800" value="100">
+            <input type="range" id="contrast" min="70" max="130" value="100">
           </div>
 
           <div class="control-group">
@@ -135,7 +154,8 @@
         <h3>✅ INSERISCI LA PAROLA NASCOSTA</h3>
         <p>Quando l'hai vista chiaramente, scrivila qui sotto:</p>
         <div class="input-group">
-          <input type="text" id="solution" placeholder="Parola nascosta..." style="text-transform: uppercase;" autocomplete="off">
+          <input type="text" id="solution" placeholder="Parola nascosta..." style="text-transform: uppercase;"
+            autocomplete="off">
         </div>
         <button class="btn" onclick="checkSolution()">VERIFICA</button>
       </div>
@@ -144,9 +164,13 @@
       <div id="codeReveal"></div>
       <div id="nextBtn"></div>
 
-      <div class="tip-box" style="margin-top: 30px; background: rgba(255, 46, 154, 0.05); border-color: var(--neon-pink);">
+      <div class="tip-box"
+        style="margin-top: 30px; background: rgba(255, 46, 154, 0.05); border-color: var(--neon-pink);">
         <h4 style="color: var(--neon-pink);">🛡️ DEBRIEF — Cosa abbiamo imparato</h4>
-        <p style="margin-bottom: 0;">La <strong>steganografia</strong> è l'arte di nascondere un messaggio dentro un altro file (immagine, audio, video). I criminali la usano per comunicare di nascosto, ma anche le foto comuni che pubblichiamo online contengono tantissime informazioni nascoste (data, luogo, modello del telefono…). Per questo è importante <strong>controllare cosa condividiamo</strong>!</p>
+        <p style="margin-bottom: 0;">La <strong>steganografia</strong> è l'arte di nascondere un messaggio dentro un
+          altro file (immagine, audio, video). I criminali la usano per comunicare di nascosto, ma anche le foto comuni
+          che pubblichiamo online contengono tantissime informazioni nascoste (data, luogo, modello del telefono…). Per
+          questo è importante <strong>controllare cosa condividiamo</strong>!</p>
       </div>
     </div>
 
@@ -222,4 +246,5 @@
     });
   </script>
 </body>
+
 </html>
