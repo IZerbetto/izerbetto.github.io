@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prova 4 - Tracce Digitali | Agenzia Fenice</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .coordinates-box {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(255, 46, 154, 0.1));
+      border: 2px solid var(--neon-cyan);
+      border-radius: 15px;
+      padding: 30px;
+      margin: 25px 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .coordinates-box::before {
+      content: '📍';
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 2em;
+      opacity: 0.3;
+    }
+    .coordinates-box .label {
+      color: var(--text-dim);
+      font-size: 0.85em;
+      letter-spacing: 3px;
+      margin-bottom: 15px;
+    }
+    .coordinates-box .coords {
+      font-size: 2em;
+      color: var(--neon-yellow);
+      letter-spacing: 4px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      text-shadow: 0 0 20px rgba(255, 240, 60, 0.5);
+    }
+    .clue-card {
+      background: rgba(255, 240, 60, 0.05);
+      border: 1px dashed var(--neon-yellow);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+    }
+    .clue-card .clue-icon {
+      font-size: 2.5em;
+      flex-shrink: 0;
+    }
+    .clue-card .clue-text {
+      flex: 1;
+    }
+    .clue-card h4 {
+      color: var(--neon-yellow);
+      margin-bottom: 8px;
+    }
+    @media (max-width: 600px) {
+      .coordinates-box .coords { font-size: 1.3em; letter-spacing: 2px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="header"></div>
+    <div id="progress"></div>
+
+    <div class="card">
+      <h1>🗺️ PROVA 4 — TRACCE DIGITALI</h1>
+
+      <div class="narration">
+        <p>Stiamo ricostruendo il passato di Nyx. 🔎</p>
+        <p>Abbiamo scoperto che <strong>anni fa Nyx ha lavorato in un cantiere</strong> insieme a suo zio: erano impegnati nei lavori di restauro di un famoso castello.</p>
+        <p>Le nostre fonti ci dicono che <strong>proprio in questi giorni in zona si vede un camion con il logo della ditta</strong>. Sembra che siano tornati a fare manutenzione.</p>
+        <p>Quello che ci serve è il <strong>nome esatto della ditta</strong>. Ci serve come prova per incastrarlo. Solo voi potete trovarlo.</p>
+      </div>
+
+      <div class="coordinates-box">
+        <div class="label">— COORDINATE SATELLITARI INTERCETTATE —</div>
+        <div class="coords">42.866492, 12.915084</div>
+      </div>
+
+      <div class="clue-card">
+        <div class="clue-icon">🚚</div>
+        <div class="clue-text">
+          <h4>INDIZIO DAGLI INFORMATORI</h4>
+          <p style="margin-bottom: 0;">In zona è stato avvistato <strong>un camion con scritto il nome della ditta</strong>. Cerca segni di lavori in corso, cantieri, mezzi parcheggiati o cartelli. Il camion potrebbe essere in qualsiasi punto vicino al castello.</p>
+        </div>
+      </div>
+
+      <div class="mission-box">
+        <h3>🎯 LA TUA MISSIONE</h3>
+        <ol style="margin-top: 10px;">
+          <li><strong>Apri Google Maps</strong> sul tuo dispositivo (browser o app)</li>
+          <li><strong>Copia e incolla le coordinate</strong> qui sopra nella barra di ricerca</li>
+          <li><strong>Esplora la zona</strong>: usa Street View (trascina l'omino giallo sulla mappa)</li>
+          <li><strong>Cerca il camion</strong> con il nome della ditta scritto sopra</li>
+          <li>Quando l'hai trovato, scrivi qui sotto il nome della ditta</li>
+        </ol>
+      </div>
+
+      <div class="tip-box">
+        <h4>💡 Suggerimenti da detective</h4>
+        <ul style="margin-top: 8px; margin-bottom: 0;">
+          <li>Su computer: <strong>cerca le coordinate su Google Maps</strong>, poi clicca sull'<strong>omino giallo</strong> in basso a destra e trascinalo sulla strada</li>
+          <li>Su telefono: apri l'<strong>app Google Maps</strong>, incolla le coordinate, e una volta sul posto tocca il piccolo riquadro Street View che appare in basso</li>
+          <li>Il nome della ditta è composto da <strong>due cognomi</strong></li>
+          <li>Guarda bene <strong>tutti i lati</strong> del camion girando in Street View</li>
+        </ul>
+      </div>
+
+      <div class="mission-box" style="margin-top: 30px;">
+        <h3>✅ INSERISCI IL NOME DELLA DITTA</h3>
+        <div class="input-group">
+          <input type="text" id="solution" placeholder="Es: Rossi Bianchi" style="text-transform: uppercase;" autocomplete="off">
+        </div>
+        <button class="btn" onclick="checkSolution()">VERIFICA</button>
+      </div>
+
+      <div id="message"></div>
+      <div id="codeReveal"></div>
+      <div id="nextBtn"></div>
+
+      <div class="tip-box" style="margin-top: 30px; background: rgba(255, 46, 154, 0.05); border-color: var(--neon-pink);">
+        <h4 style="color: var(--neon-pink);">🛡️ DEBRIEF — Cosa abbiamo imparato</h4>
+        <p style="margin-bottom: 0;">Questa tecnica si chiama <strong>OSINT</strong> (Open Source Intelligence): cercare informazioni nascoste tra dati pubblici. Tutto quello che pubblichiamo online — foto, post, persino vecchi cartelli ripresi da Google Maps — può raccontare la nostra storia. Per questo è importante <strong>fare attenzione a cosa condividiamo</strong> in rete!</p>
+      </div>
+    </div>
+
+    <div id="codesTracker"></div>
+  </div>
+
+  <script src="assets/js/fenice.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = FENICE.renderHeader();
+    document.getElementById('progress').innerHTML = FENICE.renderProgressBar(4);
+    document.getElementById('codesTracker').innerHTML = FENICE.renderCodesTracker();
+
+    function normalize(s) {
+      return s.trim().toUpperCase()
+        .replace(/[\s\-_,.]+/g, ' ')
+        .replace(/\s+/g, ' ');
+    }
+
+    function checkSolution() {
+      const sol = normalize(document.getElementById('solution').value);
+      const correct = normalize(FENICE.SOLUTIONS[4]);
+      const swapped = correct.split(' ').reverse().join(' ');
+
+      if (sol === correct || sol === swapped) {
+        FENICE.showMessage('message', 'success', '✅ TROVATO! Sei un vero detective digitale.');
+        revealCode();
+      } else if (sol) {
+        FENICE.showMessage('message', 'error', '❌ Non è la ditta giusta. Continua a cercare il camion in Street View!');
+      } else {
+        FENICE.showMessage('message', 'error', '❌ Inserisci il nome della ditta!');
+      }
+    }
+
+    function revealCode() {
+      const code = FENICE.CODES[4];
+      FENICE.saveCode(4, code);
+      document.getElementById('codeReveal').innerHTML = `
+        <div class="code-reveal">
+          <div class="label">🎯 QUARTO CODICE CASSAFORTE</div>
+          <div class="code">${code}</div>
+          <div class="reminder">📝 Scrivilo subito sulla Scheda Missione!</div>
+        </div>
+      `;
+      document.getElementById('nextBtn').innerHTML = `
+        <div class="text-center mt-20">
+          <a href="gate-5.html" class="btn btn-success btn-large">ULTIMA PROVA →</a>
+        </div>
+      `;
+      document.getElementById('codesTracker').innerHTML = FENICE.renderCodesTracker();
+    }
+
+    document.getElementById('solution').addEventListener('keypress', e => {
+      if (e.key === 'Enter') checkSolution();
+    });
+  </script>
+</body>
+</html>

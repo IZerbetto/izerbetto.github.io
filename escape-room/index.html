@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenzia Fenice - Operazione Nyx</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div id="header"></div>
+
+    <div class="card">
+      <h1>🚨 OPERAZIONE NYX 🚨</h1>
+
+      <div class="narration">
+        <p><strong>Agenzia Fenice, abbiamo un problema.</strong></p>
+        <p>Un hacker conosciuto come <strong>Nyx</strong> ha violato un server e ha rubato dati sensibili di migliaia di persone.</p>
+        <p>Se non lo fermiamo entro oggi, pubblicherà tutto online.</p>
+        <p>Abbiamo intercettato il sistema di sicurezza che blocca l'attacco: è protetto da una <strong>cassaforte digitale</strong>.</p>
+        <p>Per aprirla servono <strong>5 codici segreti</strong>.</p>
+        <p>Ogni codice è nascosto dentro una prova.</p>
+        <p style="margin-top: 20px; color: var(--neon-pink); font-size: 1.1em;">Agenti… il tempo è iniziato. 🔥</p>
+      </div>
+
+      <div class="mission-box">
+        <h3>🎯 LA TUA MISSIONE</h3>
+        <ol style="margin-top: 10px;">
+          <li>Affronta le <strong>5 prove di cybersicurezza</strong></li>
+          <li>Per ogni prova risolta otterrai un <strong>codice numerico</strong></li>
+          <li>Tra una prova e l'altra, chiedi alla formatrice il <strong>codice di accesso</strong></li>
+          <li>Inserisci tutti e 5 i codici nella <strong>cassaforte finale</strong></li>
+          <li>Salva l'agenzia e ferma Nyx! 🔥</li>
+        </ol>
+      </div>
+
+      <div class="tip-box">
+        <h4>📋 Importante</h4>
+        <p style="margin: 0;">Tieni a portata di mano la <strong>Scheda Missione</strong> per scrivere i codici man mano che li trovi. Ti serviranno tutti alla fine!</p>
+      </div>
+
+      <div class="text-center mt-20">
+        <a href="prova-1.html" class="btn btn-large">🚀 INIZIA LA MISSIONE</a>
+      </div>
+    </div>
+
+    <p class="text-center" style="margin-top: 30px; color: var(--text-dim); font-size: 0.85em;">
+      Agenzia Fenice • Cybersecurity Defense Unit • Confidential
+    </p>
+  </div>
+
+  <script src="assets/js/fenice.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = FENICE.renderHeader();
+    // Reset progressi se l'utente clicca "Inizia"
+    FENICE.reset();
+  </script>
+</body>
+</html>

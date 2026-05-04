@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accesso Bloccato | Agenzia Fenice</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div id="header"></div>
+
+    <div class="card">
+      <div class="gate-icon">🔒</div>
+      <h1>ACCESSO BLOCCATO</h1>
+
+      <div class="narration text-center">
+        <p>Stai entrando in <strong>Zona di Sicurezza Livello 2</strong>.</p>
+        <p>Per procedere alla prossima prova serve il <strong>codice di autorizzazione</strong>.</p>
+        <p style="color: var(--neon-pink);">📞 Chiedi alla formatrice il codice di accesso!</p>
+      </div>
+
+      <div class="input-group">
+        <label for="gateCode">CODICE DI AUTORIZZAZIONE</label>
+        <input type="text" id="gateCode" placeholder="Inserisci il codice fornito dalla formatrice" autocomplete="off" style="text-transform: uppercase;">
+      </div>
+
+      <div class="text-center">
+        <button class="btn btn-large" onclick="checkGate()">🔓 SBLOCCA</button>
+      </div>
+
+      <div id="message"></div>
+    </div>
+
+    <div class="text-center" style="margin-top: 20px;">
+      <a href="prova-1.html" class="btn btn-secondary">← Torna alla Prova 1</a>
+    </div>
+  </div>
+
+  <script src="assets/js/fenice.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = FENICE.renderHeader();
+
+    const GATE_NUM = 2;
+    const NEXT_PAGE = 'prova-2.html';
+
+    function checkGate() {
+      const code = document.getElementById('gateCode').value.trim().toUpperCase();
+      const expected = FENICE.GATE_CODES[GATE_NUM];
+
+      if (code === expected) {
+        FENICE.showMessage('message', 'success', '✅ ACCESSO AUTORIZZATO. Reindirizzamento in corso...');
+        setTimeout(() => FENICE.goTo(NEXT_PAGE), 1200);
+      } else {
+        FENICE.showMessage('message', 'error', '❌ CODICE ERRATO. Chiedi alla formatrice!');
+      }
+    }
+
+    document.getElementById('gateCode').addEventListener('keypress', e => {
+      if (e.key === 'Enter') checkGate();
+    });
+  </script>
+</body>
+</html>
