@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cassaforte Finale | Agenzia Fenice</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div id="header"></div>
+
+    <div class="card">
+      <h1>🔐 CASSAFORTE DIGITALE</h1>
+
+      <div class="narration">
+        <p>Agenti, avete raccolto <strong>tutti e 5 i codici</strong>. 🎉</p>
+        <p>Inseriteli ora nella cassaforte digitale. Una volta sbloccata, l'attacco di Nyx sarà bloccato per sempre e l'Agenzia Fenice sarà al sicuro.</p>
+        <p style="color: var(--neon-pink);">Il tempo sta scadendo… Inserite i codici!</p>
+      </div>
+
+      <div class="safe-container" id="safe">
+        <div style="text-align: center; font-size: 4em; margin-bottom: 10px;" id="safeIcon">🔒</div>
+
+        <div class="safe-display" id="safeDisplay">
+          - - - - -
+        </div>
+
+        <div class="safe-inputs">
+          <input type="number" id="code1" placeholder="?" maxlength="3" min="0">
+          <input type="number" id="code2" placeholder="?" maxlength="3" min="0">
+          <input type="number" id="code3" placeholder="?" maxlength="3" min="0">
+          <input type="number" id="code4" placeholder="?" maxlength="3" min="0">
+          <input type="number" id="code5" placeholder="?" maxlength="3" min="0">
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; text-align: center; color: var(--text-dim); font-size: 0.85em; margin-top: -10px;">
+          <div>Crittografia</div>
+          <div>Password</div>
+          <div>Phishing</div>
+          <div>Tracce</div>
+          <div>Stegano</div>
+        </div>
+
+        <div class="text-center" style="margin-top: 30px;">
+          <button class="btn btn-large" onclick="unlock()" id="unlockBtn">🔓 SBLOCCA CASSAFORTE</button>
+        </div>
+      </div>
+
+      <div id="message"></div>
+    </div>
+  </div>
+
+  <script src="assets/js/fenice.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = FENICE.renderHeader();
+
+    // Auto-aggiorna display
+    const inputs = ['code1', 'code2', 'code3', 'code4', 'code5'].map(id => document.getElementById(id));
+    inputs.forEach((inp, i) => {
+      inp.addEventListener('input', () => {
+        updateDisplay();
+        // Auto-jump al successivo se >= 2 caratteri
+        if (inp.value.length >= 2 && i < inputs.length - 1) {
+          inputs[i + 1].focus();
+        }
+      });
+      inp.addEventListener('keypress', e => {
+        if (e.key === 'Enter') unlock();
+      });
+    });
+
+    function updateDisplay() {
+      const vals = inputs.map(i => i.value || '-');
+      document.getElementById('safeDisplay').textContent = vals.join('  ');
+    }
+
+    function unlock() {
+      const codes = inputs.map(i => i.value.trim());
+      const expected = [FENICE.CODES[1], FENICE.CODES[2], FENICE.CODES[3], FENICE.CODES[4], FENICE.CODES[5]];
+
+      // Verifica che tutti siano riempiti
+      if (codes.some(c => !c)) {
+        FENICE.showMessage('message', 'error', '❌ Inserisci tutti e 5 i codici!');
+        return;
+      }
+
+      const correct = codes.every((c, i) => c === expected[i]);
+
+      if (correct) {
+        // Animazione apertura
+        const safe = document.getElementById('safe');
+        safe.classList.add('safe-opening');
+        document.getElementById('safeIcon').textContent = '🔓';
+        document.getElementById('unlockBtn').disabled = true;
+        FENICE.showMessage('message', 'success', '✅ ACCESSO CONSENTITO – DATI SALVATI');
+
+        // Vai a vittoria dopo l'animazione
+        setTimeout(() => {
+          FENICE.goTo('vittoria.html');
+        }, 2000);
+      } else {
+        FENICE.showMessage('message', 'error', '🚫 ACCESSO NEGATO – Controlla i codici sulla Scheda Missione!');
+        // Effetto shake
+        document.getElementById('safe').style.animation = 'shake 0.5s';
+        setTimeout(() => {
+          document.getElementById('safe').style.animation = '';
+        }, 500);
+      }
+    }
+  </script>
+</body>
+</html>

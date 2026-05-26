@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prova 1 - Crittografia | Agenzia Fenice</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .alphabet-table {
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid var(--neon-cyan);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 25px 0;
+      overflow-x: auto;
+    }
+    .alphabet-row {
+      display: grid;
+      grid-template-columns: 110px repeat(26, 1fr);
+      gap: 4px;
+      align-items: center;
+      margin-bottom: 8px;
+      min-width: 700px;
+    }
+    .alphabet-label {
+      color: var(--neon-yellow);
+      font-weight: bold;
+      font-size: 0.85em;
+      letter-spacing: 1px;
+    }
+    .alphabet-cell {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-darker);
+      border: 1px solid var(--border-glow);
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      font-size: 1em;
+      color: var(--text-light);
+    }
+    .alphabet-cell.cipher {
+      background: rgba(255, 46, 154, 0.15);
+      border-color: var(--neon-pink);
+      color: var(--neon-pink);
+    }
+    .alphabet-cell.plain {
+      background: rgba(0, 240, 255, 0.15);
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+    .cipher-message {
+      background: var(--bg-darker);
+      border: 2px solid var(--neon-yellow);
+      border-radius: 10px;
+      padding: 25px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .cipher-message .label {
+      color: var(--text-dim);
+      font-size: 0.85em;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+    .cipher-message .text {
+      font-size: 2.2em;
+      color: var(--neon-yellow);
+      letter-spacing: 8px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      text-shadow: 0 0 15px rgba(255, 240, 60, 0.4);
+    }
+    .word-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border-left: 4px solid var(--neon-pink);
+    }
+    .word-section h3 { margin-top: 0; }
+    @media (max-width: 700px) {
+      .cipher-message .text { font-size: 1.4em; letter-spacing: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="header"></div>
+    <div id="progress"></div>
+
+    <div class="card">
+      <h1>🔐 PROVA 1 — CRITTOGRAFIA</h1>
+
+      <div class="narration">
+        <p>Agenti, abbiamo intercettato <strong>due messaggi cifrati</strong> di Nyx ai suoi complici.</p>
+        <p>Nyx li ha codificati con il <strong>Cifrario di Cesare</strong>: una tecnica antichissima che spostava ogni lettera di un certo numero di posizioni nell'alfabeto.</p>
+        <p>Abbiamo intercettato anche la chiave: <strong>SHIFT = 3</strong>. Ora tocca a voi decifrare!</p>
+      </div>
+
+      <div class="mission-box">
+        <h3>📖 COME FUNZIONA IL CIFRARIO DI CESARE</h3>
+        <p>Per <strong>decifrare</strong> una lettera, devi <strong>tornare indietro di 3 posizioni</strong> nell'alfabeto.</p>
+        <p>Esempio: la lettera <strong style="color: var(--neon-pink);">D</strong> diventa <strong style="color: var(--neon-cyan);">A</strong> (D → C → B → A, indietro di 3).</p>
+        <p>Usa la tabella qui sotto: trova la lettera cifrata nella riga ROSA e leggi sotto, nella riga AZZURRA, la lettera vera.</p>
+      </div>
+
+      <h3>🔤 TABELLA DI DECIFRAZIONE (shift = 3)</h3>
+      <div class="alphabet-table">
+        <div class="alphabet-row" id="cipherRow">
+          <div class="alphabet-label">CIFRATO ↓</div>
+        </div>
+        <div class="alphabet-row" id="plainRow">
+          <div class="alphabet-label">VERO ↓</div>
+        </div>
+      </div>
+
+      <h2 style="text-align: center; margin-top: 30px;">📡 MESSAGGI INTERCETTATI</h2>
+      <p class="text-center" style="color: var(--text-dim);">Decifrate entrambi i messaggi per ottenere il codice!</p>
+
+      <div class="word-section">
+        <h3 style="color: var(--neon-pink);">Messaggio 1 (più corto)</h3>
+        <div class="cipher-message">
+          <div class="label">— FRAMMENTO INTERCETTATO —</div>
+          <div class="text">FRGLFH</div>
+        </div>
+        <div class="input-group">
+          <label for="solution1">Inserisci la parola decifrata:</label>
+          <input type="text" id="solution1" placeholder="Scrivi qui..." style="text-transform: uppercase;" autocomplete="off">
+        </div>
+        <div id="result1" style="margin-top: 10px;"></div>
+      </div>
+
+      <div class="word-section">
+        <h3 style="color: var(--neon-pink);">Messaggio 2 (più lungo)</h3>
+        <div class="cipher-message">
+          <div class="label">— FRAMMENTO INTERCETTATO —</div>
+          <div class="text">DJHQWL VHJUHWL</div>
+        </div>
+        <div class="input-group">
+          <label for="solution2">Inserisci la frase decifrata:</label>
+          <input type="text" id="solution2" placeholder="Scrivi qui..." style="text-transform: uppercase;" autocomplete="off">
+        </div>
+        <div id="result2" style="margin-top: 10px;"></div>
+      </div>
+
+      <div class="text-center mt-20">
+        <button class="btn btn-large" onclick="checkAll()">🔍 VERIFICA ENTRAMBI</button>
+      </div>
+
+      <div id="message"></div>
+      <div id="codeReveal"></div>
+      <div id="nextBtn"></div>
+    </div>
+
+    <div id="codesTracker"></div>
+  </div>
+
+  <script src="assets/js/fenice.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = FENICE.renderHeader();
+    document.getElementById('progress').innerHTML = FENICE.renderProgressBar(1);
+    document.getElementById('codesTracker').innerHTML = FENICE.renderCodesTracker();
+
+    const cipherRow = document.getElementById('cipherRow');
+    const plainRow = document.getElementById('plainRow');
+    for (let i = 0; i < 26; i++) {
+      const cipherLetter = String.fromCharCode(65 + i);
+      const plainLetter = String.fromCharCode(65 + ((i - 3 + 26) % 26));
+
+      const c = document.createElement('div');
+      c.className = 'alphabet-cell cipher';
+      c.textContent = cipherLetter;
+      cipherRow.appendChild(c);
+
+      const p = document.createElement('div');
+      p.className = 'alphabet-cell plain';
+      p.textContent = plainLetter;
+      plainRow.appendChild(p);
+    }
+
+    const SOL_1 = 'CODICE';
+    const SOL_2 = 'AGENTI SEGRETI';
+
+    function normalize(s) {
+      return s.trim().toUpperCase().replace(/\s+/g, ' ');
+    }
+
+    function checkAll() {
+      const s1 = normalize(document.getElementById('solution1').value);
+      const s2 = normalize(document.getElementById('solution2').value);
+
+      const ok1 = s1 === SOL_1;
+      const ok2 = s2 === SOL_2;
+
+      document.getElementById('result1').innerHTML = ok1
+        ? '<div class="message success">✅ Messaggio 1 decifrato!</div>'
+        : (s1 ? '<div class="message error">❌ Messaggio 1: ancora sbagliato. Usa la tabella!</div>' : '');
+
+      document.getElementById('result2').innerHTML = ok2
+        ? '<div class="message success">✅ Messaggio 2 decifrato!</div>'
+        : (s2 ? '<div class="message error">❌ Messaggio 2: ancora sbagliato. Attenzione agli spazi!</div>' : '');
+
+      if (ok1 && ok2) {
+        FENICE.showMessage('message', 'success', '🎉 ENTRAMBI DECIFRATI! Sei un vero crittografo.');
+        revealCode();
+      } else if (!s1 && !s2) {
+        FENICE.showMessage('message', 'error', '❌ Inserisci entrambe le soluzioni!');
+      }
+    }
+
+    function revealCode() {
+      const code = FENICE.CODES[1];
+      FENICE.saveCode(1, code);
+      document.getElementById('codeReveal').innerHTML = `
+        <div class="code-reveal">
+          <div class="label">🎯 PRIMO CODICE CASSAFORTE</div>
+          <div class="code">${code}</div>
+          <div class="reminder">📝 Scrivilo subito sulla Scheda Missione!</div>
+        </div>
+      `;
+      document.getElementById('nextBtn').innerHTML = `
+        <div class="text-center mt-20">
+          <a href="gate-2.html" class="btn btn-success btn-large">PROVA SUCCESSIVA →</a>
+        </div>
+      `;
+      document.getElementById('codesTracker').innerHTML = FENICE.renderCodesTracker();
+    }
+  </script>
+</body>
+</html>

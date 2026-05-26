@@ -17,12 +17,12 @@
       <div class="narration text-center">
         <p>Stai entrando in <strong>Zona di Sicurezza Livello 2</strong>.</p>
         <p>Per procedere alla prossima prova serve il <strong>codice di autorizzazione</strong>.</p>
-        <p style="color: var(--neon-pink);">📞 Chiedi alla formatore il codice di accesso!</p>
+        <p style="color: var(--neon-pink);">📞 Chiedi alla formatrice il codice di accesso!</p>
       </div>
 
       <div class="input-group">
         <label for="gateCode">CODICE DI AUTORIZZAZIONE</label>
-        <input type="text" id="gateCode" placeholder="Inserisci il codice fornito dalla formatore" autocomplete="off" style="text-transform: uppercase;">
+        <input type="text" id="gateCode" placeholder="Inserisci il codice fornito dalla formatrice" autocomplete="off" style="text-transform: uppercase;">
       </div>
 
       <div class="text-center">
@@ -52,7 +52,7 @@
         FENICE.showMessage('message', 'success', '✅ ACCESSO AUTORIZZATO. Reindirizzamento in corso...');
         setTimeout(() => FENICE.goTo(NEXT_PAGE), 1200);
       } else {
-        FENICE.showMessage('message', 'error', '❌ CODICE ERRATO. Chiedi alla formatore!');
+        FENICE.showMessage('message', 'error', '❌ CODICE ERRATO. Chiedi alla formatrice!');
       }
     }
 

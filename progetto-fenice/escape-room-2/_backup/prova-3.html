@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prova 3 - Phishing | Agenzia Fenice</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .email-tabs {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0 0 0;
+    }
+    .email-tab {
+      flex: 1;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 2px solid var(--border-glow);
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      text-align: center;
+      font-weight: bold;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+    }
+    .email-tab.active {
+      background: rgba(255, 46, 154, 0.1);
+      border-color: var(--neon-pink);
+      color: var(--neon-pink);
+    }
+    .email-tab.completed {
+      background: rgba(57, 255, 20, 0.1);
+      border-color: var(--neon-green);
+      color: var(--neon-green);
+    }
+    .email-section {
+      display: none;
+    }
+    .email-section.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="header"></div>
+    <div id="progress"></div>
+
+    <div class="card">
+      <h1>🎣 PROVA 3 — PHISHING</h1>
+
+      <div class="narration">
+        <p>Una delle tecniche preferite di Nyx è il <strong>phishing</strong>: invia email false che sembrano vere per rubare dati e password.</p>
+        <p>Abbiamo intercettato <strong>due email</strong> che Nyx ha inviato alle sue vittime. Devi analizzarle <strong>una per volta</strong> e trovare tutti gli elementi sospetti.</p>
+      </div>
+
+      <div class="email-tabs">
+        <div class="email-tab active" id="tab1">📧 Email 1</div>
+        <div class="email-tab" id="tab2">📧 Email 2 🔒</div>
+      </div>
+
+      <!-- ============ EMAIL 1 ============ -->
+      <div class="email-section active" id="section1">
+        <div class="mission-box" style="margin-top: 0;">
+          <h3>🎯 EMAIL 1 — TROVA GLI ELEMENTI SOSPETTI</h3>
+          <p>Clicca su tutto ciò che ti sembra strano, falso o pericoloso.</p>
+        </div>
+
+        <div class="suspicious-counter">
+          🔍 Sospetti trovati: <span id="found1">0</span> / 5
+        </div>
+
+        <div class="email-container">
+          <div class="email-header">
+            <div><strong>Da:</strong> <span class="suspicious" data-email="1" data-tip="❌ Guarda bene il mittente: 'paypa1' ha un UNO al posto della L! È un trucco classico per imitare PayPal e ingannarti.">support@paypa1-secure.com</span></div>
+            <div><strong>A:</strong> tu@email.com</div>
+            <div><strong>Oggetto:</strong> <span class="suspicious" data-email="1" data-tip="❌ Le email vere non urlano! Tutto MAIUSCOLO e mille punti esclamativi servono solo a metterti ansia per farti agire d'impulso.">URGENTE: Account bloccato!!!</span></div>
+          </div>
+          <div class="email-body">
+            <p><span class="suspicious" data-email="1" data-tip="❌ Le aziende vere ti chiamano per nome! Un saluto generico come 'Gentile cliente' è un grosso campanello d'allarme.">Gentile cliente</span>,</p>
+            <p>il tuo account è stato sospeso per attività sospette.</p>
+            <p>Clicca subito qui per verificare:<br>
+              <span class="suspicious" data-email="1" data-tip="❌ Il link è strano: termina con .ru (Russia) e non è il vero sito di PayPal! I link veri di PayPal finiscono con paypal.com." style="color: #1976d2; text-decoration: underline; word-break: break-all;">http://paypa1-security-check.ru</span>
+            </p>
+            <p><span class="suspicious" data-email="1" data-tip="❌ Le minacce con scadenze brevi servono a metterti fretta perché tu non ragioni! Le aziende serie non eliminano account in 24 ore.">Se non agisci entro 24 ore, il tuo account sarà eliminato.</span></p>
+            <p>Cordiali saluti,<br>Team sicurezza</p>
+          </div>
+        </div>
+
+        <div id="tipBox1" class="tip-box hidden">
+          <h4 id="tipTitle1">💡 Hai trovato un indizio!</h4>
+          <p id="tipText1"></p>
+        </div>
+      </div>
+
+      <!-- ============ EMAIL 2 ============ -->
+      <div class="email-section" id="section2">
+        <div class="mission-box" style="margin-top: 0;">
+          <h3>🎯 EMAIL 2 — TROVA GLI ELEMENTI SOSPETTI</h3>
+          <p>Questa email è ancora più subdola. Trovi tutti gli elementi sospetti?</p>
+        </div>
+
+        <div class="suspicious-counter">
+          🔍 Sospetti trovati: <span id="found2">0</span> / 5
+        </div>
+
+        <div class="email-container">
+          <div class="email-header">
+            <div><strong>Da:</strong> <span class="suspicious" data-email="2" data-tip="❌ Indirizzo strano: 'am4zon' usa il numero 4 al posto della A, e finisce con '.shop' invece di '.com'. Amazon vero non userebbe mai un dominio così.">premi-am4zon@offerte.shop</span></div>
+            <div><strong>A:</strong> tu@email.com</div>
+            <div><strong>Oggetto:</strong> <span class="suspicious" data-email="2" data-tip="❌ 'CONGRATULAZIONI' tutto maiuscolo e una vincita inaspettata sono il classico trucco per farti aprire un'email che non aspettavi. Se non hai partecipato a nessun concorso, è una truffa!">🎉 CONGRATULAZIONI!! Hai vinto un iPhone!! 🎉</span></div>
+          </div>
+          <div class="email-body">
+            <p>Caro utenteee,</p>
+            <p>Sei stato selezzionato come <span class="suspicious" data-email="2" data-tip="❌ Errori di scrittura! 'utenteee' con tre E, 'selezzionato' con due Z, 'vinncitore' con due N: le aziende serie hanno persone che controllano i testi prima di inviare le email.">vinncitore</span> del nostro grande concorzo.</p>
+            <p>Per ricevere il tuo iPhone 15 Pro <span class="suspicious" data-email="2" data-tip="❌ Nessuno regala iPhone gratis! Se è troppo bello per essere vero, è quasi sempre una truffa.">GRATIS</span>, devi solo:</p>
+            <p>1. Confermare i tuoi dati cliccando qui:<br>
+              <span class="suspicious" data-email="2" data-tip="❌ URL stranissimo con numeri al posto delle lettere ('arnaz0n', 'pr3mi0') e dominio finto. Amazon vero ha sempre l'indirizzo amazon.it o amazon.com." style="color: #1976d2; text-decoration: underline; word-break: break-all;">http://arnaz0n-pr3mi0.win/click-now</span>
+            </p>
+            <p>2. Pagare solo le spese di spedizione di 1,99€</p>
+            <p>L'offerta scade tra <strong>2 ore</strong>!</p>
+            <p>Saluti,<br>Il team Amazoon</p>
+          </div>
+        </div>
+
+        <div id="tipBox2" class="tip-box hidden">
+          <h4 id="tipTitle2">💡 Hai trovato un indizio!</h4>
+          <p id="tipText2"></p>
+        </div>
+      </div>
+
+      <div id="message"></div>
+      <div id="codeReveal"></div>
+      <div id="nextBtn"></div>
+    </div>
+
+    <div id="codesTracker"></div>
+  </div>
+
+  <script src="assets/js/fenice.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = FENICE.renderHeader();
+    document.getElementById('progress').innerHTML = FENICE.renderProgressBar(3);
+    document.getElementById('codesTracker').innerHTML = FENICE.renderCodesTracker();
+
+    const counts = { 1: 0, 2: 0 };
+    const TOTAL_PER_EMAIL = 5;
+    let email1Done = false;
+    let email2Done = false;
+
+    document.querySelectorAll('.suspicious').forEach(el => {
+      el.addEventListener('click', () => {
+        if (el.classList.contains('found')) return;
+        el.classList.add('found');
+
+        const emailNum = el.dataset.email;
+        counts[emailNum]++;
+        document.getElementById('found' + emailNum).textContent = counts[emailNum];
+
+        const tipBox = document.getElementById('tipBox' + emailNum);
+        document.getElementById('tipText' + emailNum).textContent = el.dataset.tip;
+        tipBox.classList.remove('hidden');
+        tipBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        if (counts[emailNum] === TOTAL_PER_EMAIL) {
+          if (emailNum === '1') {
+            email1Done = true;
+            setTimeout(() => {
+              FENICE.showMessage('message', 'success', '✅ Email 1 completata! Ora analizza la seconda.');
+              // Sblocca tab 2
+              document.getElementById('tab2').textContent = '📧 Email 2';
+              document.getElementById('tab1').classList.remove('active');
+              document.getElementById('tab1').classList.add('completed');
+              document.getElementById('tab2').classList.add('active');
+              document.getElementById('section1').classList.remove('active');
+              document.getElementById('section2').classList.add('active');
+              document.getElementById('tab2').onclick = null;
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 1200);
+          } else if (emailNum === '2') {
+            email2Done = true;
+            setTimeout(() => {
+              document.getElementById('tab2').classList.remove('active');
+              document.getElementById('tab2').classList.add('completed');
+              FENICE.showMessage('message', 'success', '🎉 PERFETTO! Hai smascherato entrambe le email truffaldine. Da oggi sei un esperto/a anti-phishing!');
+              revealCode();
+            }, 1200);
+          }
+        }
+      });
+    });
+
+    // Tab click — solo se sbloccato
+    document.getElementById('tab1').addEventListener('click', () => {
+      if (email1Done || email2Done) return; // se entrambe fatte, lascia stato finale
+      document.getElementById('tab1').classList.add('active');
+      document.getElementById('tab2').classList.remove('active');
+      document.getElementById('section1').classList.add('active');
+      document.getElementById('section2').classList.remove('active');
+    });
+
+    function revealCode() {
+      const code = FENICE.CODES[3];
+      FENICE.saveCode(3, code);
+      document.getElementById('codeReveal').innerHTML = `
+        <div class="code-reveal">
+          <div class="label">🎯 TERZO CODICE CASSAFORTE</div>
+          <div class="code">${code}</div>
+          <div class="reminder">📝 Scrivilo subito sulla Scheda Missione!</div>
+        </div>
+      `;
+      document.getElementById('nextBtn').innerHTML = `
+        <div class="text-center mt-20">
+          <a href="gate-4.html" class="btn btn-success btn-large">PROVA SUCCESSIVA →</a>
+        </div>
+      `;
+      document.getElementById('codesTracker').innerHTML = FENICE.renderCodesTracker();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vittoria! | Agenzia Fenice</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    /* === Scena arresto === */
+    .arrest-scene {
+      width: 100%;
+      max-width: 700px;
+      margin: 30px auto;
+      background: linear-gradient(180deg, #1a2050 0%, #0a0e27 60%, #050818 100%);
+      border-radius: 15px;
+      border: 2px solid var(--neon-cyan);
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 16 / 9;
+    }
+    .arrest-scene svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* === SCENA: 3 fasi che si ripetono === */
+    /* Fase 1 (0-30%): macchina arriva da sinistra, poliziotti+Nyx fermi al centro */
+    /* Fase 2 (30-60%): poliziotti+Nyx camminano verso la macchina */
+    /* Fase 3 (60-100%): macchina parte verso destra con tutti dentro */
+
+    /* Macchina della polizia: arriva, sosta, parte */
+    @keyframes carArrive {
+      0% { transform: translateX(-450px); }
+      25% { transform: translateX(0); }
+      55% { transform: translateX(0); }
+      85% { transform: translateX(900px); }
+      100% { transform: translateX(900px); }
+    }
+    .car-group { animation: carArrive 9s ease-in-out infinite; }
+
+    /* Nyx + poliziotti: stanno fermi un po', poi camminano e svaniscono dentro la macchina */
+    @keyframes peopleWalk {
+      0%, 25% { transform: translateX(0); opacity: 1; }
+      55% { transform: translateX(-180px); opacity: 1; }
+      60% { transform: translateX(-180px); opacity: 0; }
+      100% { transform: translateX(-180px); opacity: 0; }
+    }
+    .people-group { animation: peopleWalk 9s ease-in-out infinite; }
+
+    /* Animazione "camminata" sussulto */
+    @keyframes walkBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    .walk-bob { animation: walkBob 0.4s infinite; }
+
+    /* Lampeggio sirena polizia molto vistoso */
+    @keyframes sirenBlue {
+      0%, 49% { opacity: 1; fill: #2196f3; }
+      50%, 100% { opacity: 0.2; fill: #1565c0; }
+    }
+    @keyframes sirenRed {
+      0%, 49% { opacity: 0.2; fill: #c62828; }
+      50%, 100% { opacity: 1; fill: #ff1744; }
+    }
+    .siren-blue { animation: sirenBlue 0.4s infinite; }
+    .siren-red { animation: sirenRed 0.4s infinite; }
+
+    /* Aloni luminosi sirene */
+    @keyframes glowBlue {
+      0%, 49% { opacity: 0.6; r: 25; }
+      50%, 100% { opacity: 0; r: 15; }
+    }
+    @keyframes glowRed {
+      0%, 49% { opacity: 0; r: 15; }
+      50%, 100% { opacity: 0.6; r: 25; }
+    }
+    .glow-blue { animation: glowBlue 0.4s infinite; }
+    .glow-red { animation: glowRed 0.4s infinite; }
+
+    /* Lacrime di Nyx */
+    @keyframes tearDrop {
+      0% { opacity: 0; transform: translateY(0); }
+      30% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(20px); }
+    }
+    .tear { animation: tearDrop 1.5s infinite; }
+    .tear-2 { animation-delay: 0.7s; }
+
+    /* Stelline di shock sopra la testa di Nyx */
+    @keyframes star {
+      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+    .star-1 { animation: star 1s infinite; }
+    .star-2 { animation: star 1s infinite 0.3s; }
+    .star-3 { animation: star 1s infinite 0.6s; }
+
+    /* Testo "ARRESTATO!" che appare e scompare */
+    @keyframes arrestText {
+      0%, 20% { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+      30%, 50% { opacity: 1; transform: scale(1.2) rotate(-8deg); }
+      55%, 100% { opacity: 0; transform: scale(1) rotate(-8deg); }
+    }
+    .arrest-text {
+      animation: arrestText 9s infinite;
+      transform-origin: center;
+    }
+
+    .scene-caption {
+      text-align: center;
+      color: var(--neon-yellow);
+      font-style: italic;
+      margin-top: 15px;
+      font-size: 1.05em;
+    }
+  </style>
+</head>
+<body>
+  <canvas class="fireworks" id="fireworks"></canvas>
+
+  <div class="container">
+    <div id="header"></div>
+
+    <div class="card">
+      <div class="victory-container">
+        <div style="font-size: 5em; margin-bottom: 10px; animation: victoryGlow 2s ease infinite;">🔥</div>
+        <h1 class="victory-title">MISSIONE COMPIUTA!</h1>
+
+        <p style="font-size: 1.2em; color: var(--neon-cyan); margin-bottom: 5px;">
+          Nyx è stato <strong>ARRESTATO</strong>! 🚓
+        </p>
+
+        <!-- ============ SCENA ARRESTO ============ -->
+        <div class="arrest-scene">
+          <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <!-- Sfondo cielo notturno -->
+            <rect x="0" y="0" width="800" height="320" fill="#0f1638"/>
+            <!-- Strada -->
+            <rect x="0" y="320" width="800" height="130" fill="#2a2a3a"/>
+            <!-- Linee strada -->
+            <rect x="20" y="395" width="40" height="6" fill="#fff03c" opacity="0.7"/>
+            <rect x="100" y="395" width="40" height="6" fill="#fff03c" opacity="0.7"/>
+            <rect x="180" y="395" width="40" height="6" fill="#fff03c" opacity="0.7"/>
+            <rect x="260" y="395" width="40" height="6" fill="#fff03c" opacity="0.7"/>
+            <rect x="340" y="395" width="40" height="6" fill="#fff03c" opacity="0.7"/>
+            <rect x="420" y="395" width="40" height="6" fill="#fff03c" opacity="0.7"/>
+            <rect x="500" y="395" width="40" height="6" fill="#fff03c" opacity="0.7"/>
+            <rect x="580" y="395" width="40" height="6" fill="#fff03c" opacity="0.7"/>
+            <rect x="660" y="395" width="40" height="6" fill="#fff03c" opacity="0.7"/>
+            <rect x="740" y="395" width="40" height="6" fill="#fff03c" opacity="0.7"/>
+
+            <!-- Stelle di sfondo -->
+            <circle cx="80" cy="50" r="2" fill="#fff" opacity="0.7"/>
+            <circle cx="180" cy="80" r="1.5" fill="#fff" opacity="0.5"/>
+            <circle cx="280" cy="40" r="2" fill="#fff" opacity="0.6"/>
+            <circle cx="450" cy="60" r="1.5" fill="#fff" opacity="0.7"/>
+            <circle cx="600" cy="90" r="2" fill="#fff" opacity="0.5"/>
+            <circle cx="700" cy="50" r="1.5" fill="#fff" opacity="0.6"/>
+            <circle cx="120" cy="120" r="1" fill="#fff" opacity="0.4"/>
+            <circle cx="380" cy="110" r="1.5" fill="#fff" opacity="0.5"/>
+            <circle cx="650" cy="140" r="1" fill="#fff" opacity="0.4"/>
+
+            <!-- ============ AUTO POLIZIA (animata: arriva, sosta, parte) ============ -->
+            <g class="car-group">
+            <g transform="translate(20, 280)">
+              <!-- aloni sirene -->
+              <circle cx="98" cy="16" r="20" fill="#2196f3" class="glow-blue" opacity="0.6"/>
+              <circle cx="143" cy="16" r="20" fill="#ff1744" class="glow-red" opacity="0"/>
+              <!-- ombra auto -->
+              <ellipse cx="120" cy="115" rx="115" ry="8" fill="#000" opacity="0.4"/>
+              <!-- carrozzeria -->
+              <rect x="20" y="40" width="200" height="60" rx="10" fill="#1565c0"/>
+              <rect x="30" y="20" width="170" height="35" rx="8" fill="#1976d2"/>
+              <!-- finestrini -->
+              <rect x="40" y="25" width="60" height="28" rx="3" fill="#0a1929" opacity="0.8"/>
+              <rect x="110" y="25" width="40" height="28" rx="3" fill="#0a1929" opacity="0.8"/>
+              <rect x="158" y="25" width="40" height="28" rx="3" fill="#0a1929" opacity="0.8"/>
+              <!-- striscia bianca -->
+              <rect x="20" y="60" width="200" height="10" fill="#fff"/>
+              <!-- scritta POLIZIA -->
+              <text x="120" y="90" font-family="monospace" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">POLIZIA</text>
+              <!-- ruote -->
+              <circle cx="60" cy="105" r="15" fill="#1a1a1a"/>
+              <circle cx="60" cy="105" r="7" fill="#444"/>
+              <circle cx="180" cy="105" r="15" fill="#1a1a1a"/>
+              <circle cx="180" cy="105" r="7" fill="#444"/>
+              <!-- Sirene lampeggianti -->
+              <rect x="80" y="10" width="35" height="12" rx="3" fill="#1565c0" class="siren-blue"/>
+              <rect x="125" y="10" width="35" height="12" rx="3" fill="#c62828" class="siren-red"/>
+              <!-- Fari -->
+              <circle cx="220" cy="75" r="5" fill="#fff03c"/>
+              <ellipse cx="240" cy="75" rx="20" ry="8" fill="#fff03c" opacity="0.4"/>
+            </g>
+            </g>
+
+            <!-- ============ GRUPPO PERSONE (Nyx + 2 poliziotti) animato ============ -->
+            <g class="people-group">
+
+            <!-- ============ POLIZIOTTO 1 (a sinistra di Nyx) ============ -->
+            <g transform="translate(330, 270)">
+              <g class="walk-bob">
+              <!-- ombra -->
+              <ellipse cx="25" cy="135" rx="22" ry="4" fill="#000" opacity="0.3"/>
+              <!-- gambe -->
+              <rect x="14" y="95" width="9" height="40" rx="2" fill="#1a237e"/>
+              <rect x="27" y="95" width="9" height="40" rx="2" fill="#1a237e"/>
+              <!-- scarpe -->
+              <ellipse cx="18" cy="138" rx="7" ry="3" fill="#000"/>
+              <ellipse cx="32" cy="138" rx="7" ry="3" fill="#000"/>
+              <!-- corpo (uniforme blu) -->
+              <rect x="10" y="50" width="30" height="50" rx="4" fill="#1976d2"/>
+              <!-- distintivo -->
+              <polygon points="22,62 28,62 30,68 25,72 20,68" fill="#fff03c"/>
+              <!-- braccio destro che tiene Nyx -->
+              <rect x="38" y="55" width="22" height="8" rx="2" fill="#1976d2" transform="rotate(15 38 59)"/>
+              <!-- mano destra -->
+              <circle cx="62" cy="68" r="5" fill="#f4c4a1"/>
+              <!-- braccio sinistro -->
+              <rect x="2" y="55" width="9" height="30" rx="2" fill="#1976d2"/>
+              <!-- testa -->
+              <circle cx="25" cy="35" r="14" fill="#f4c4a1"/>
+              <!-- capelli -->
+              <path d="M 12 28 Q 25 18 38 28 L 38 32 Q 25 24 12 32 Z" fill="#3e2723"/>
+              <!-- cappello polizia -->
+              <rect x="10" y="22" width="30" height="8" rx="2" fill="#0d47a1"/>
+              <rect x="6" y="28" width="38" height="3" fill="#0d47a1"/>
+              <polygon points="20,22 30,22 27,16 23,16" fill="#fff03c"/>
+              <!-- occhi seri -->
+              <circle cx="20" cy="36" r="1.5" fill="#000"/>
+              <circle cx="30" cy="36" r="1.5" fill="#000"/>
+              <!-- bocca seria -->
+              <line x1="22" y1="42" x2="28" y2="42" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+              </g>
+            </g>
+
+            <!-- ============ NYX ARRESTATO (centro, ammanettato) ============ -->
+            <g transform="translate(415, 265)">
+              <g class="walk-bob">
+              <!-- ombra -->
+              <ellipse cx="30" cy="145" rx="28" ry="5" fill="#000" opacity="0.3"/>
+              <!-- gambe -->
+              <rect x="18" y="100" width="11" height="45" rx="2" fill="#212121"/>
+              <rect x="33" y="100" width="11" height="45" rx="2" fill="#212121"/>
+              <!-- scarpe -->
+              <ellipse cx="22" cy="148" rx="8" ry="3" fill="#000"/>
+              <ellipse cx="38" cy="148" rx="8" ry="3" fill="#000"/>
+              <!-- corpo (felpa nera con cappuccio) -->
+              <rect x="12" y="50" width="38" height="55" rx="5" fill="#1a1a1a"/>
+              <!-- cappuccio dietro -->
+              <ellipse cx="31" cy="48" rx="20" ry="8" fill="#0a0a0a"/>
+              <!-- teschio sul petto (logo cattivo) -->
+              <circle cx="31" cy="72" r="6" fill="#3a3a3a"/>
+              <circle cx="29" cy="71" r="1.5" fill="#fff"/>
+              <circle cx="33" cy="71" r="1.5" fill="#fff"/>
+              <!-- braccia avanti (manette) -->
+              <rect x="12" y="78" width="14" height="8" rx="2" fill="#1a1a1a"/>
+              <rect x="36" y="78" width="14" height="8" rx="2" fill="#1a1a1a"/>
+              <!-- mani -->
+              <circle cx="14" cy="88" r="5" fill="#d4a574"/>
+              <circle cx="48" cy="88" r="5" fill="#d4a574"/>
+              <!-- MANETTE -->
+              <circle cx="14" cy="88" r="6" fill="none" stroke="#9e9e9e" stroke-width="2"/>
+              <circle cx="48" cy="88" r="6" fill="none" stroke="#9e9e9e" stroke-width="2"/>
+              <line x1="20" y1="88" x2="42" y2="88" stroke="#9e9e9e" stroke-width="2"/>
+              <line x1="20" y1="86" x2="42" y2="86" stroke="#bdbdbd" stroke-width="1"/>
+              <line x1="20" y1="90" x2="42" y2="90" stroke="#757575" stroke-width="1"/>
+              <!-- testa -->
+              <circle cx="31" cy="35" r="15" fill="#d4a574"/>
+              <!-- capelli scuri spettinati -->
+              <path d="M 16 30 Q 18 18 25 22 Q 31 16 38 22 Q 44 18 46 32 L 46 36 Q 31 28 16 36 Z" fill="#1a1a1a"/>
+              <!-- ciuffo davanti -->
+              <path d="M 25 22 Q 28 28 32 24 Q 35 22 35 18" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/>
+              <!-- occhi tristi (a goccia rovesciata) -->
+              <ellipse cx="26" cy="36" rx="1.5" ry="2.5" fill="#000"/>
+              <ellipse cx="36" cy="36" rx="1.5" ry="2.5" fill="#000"/>
+              <!-- sopracciglia abbassate -->
+              <line x1="22" y1="32" x2="28" y2="33" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="34" y1="33" x2="40" y2="32" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"/>
+              <!-- bocca triste -->
+              <path d="M 26 44 Q 31 41 36 44" fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+              <!-- LACRIME -->
+              <ellipse class="tear" cx="24" cy="42" rx="1.2" ry="2.5" fill="#4fc3f7"/>
+              <ellipse class="tear tear-2" cx="38" cy="42" rx="1.2" ry="2.5" fill="#4fc3f7"/>
+              <!-- Stelline di shock sopra la testa -->
+              <text class="star-1" x="12" y="15" font-size="14" fill="#fff03c">✦</text>
+              <text class="star-2" x="48" y="12" font-size="12" fill="#fff03c">✦</text>
+              <text class="star-3" x="30" y="8" font-size="10" fill="#fff03c">✦</text>
+              </g>
+            </g>
+
+            <!-- ============ POLIZIOTTO 2 (a destra di Nyx) ============ -->
+            <g transform="translate(495, 270)">
+              <g class="walk-bob">
+              <!-- ombra -->
+              <ellipse cx="25" cy="135" rx="22" ry="4" fill="#000" opacity="0.3"/>
+              <!-- gambe -->
+              <rect x="14" y="95" width="9" height="40" rx="2" fill="#1a237e"/>
+              <rect x="27" y="95" width="9" height="40" rx="2" fill="#1a237e"/>
+              <ellipse cx="18" cy="138" rx="7" ry="3" fill="#000"/>
+              <ellipse cx="32" cy="138" rx="7" ry="3" fill="#000"/>
+              <!-- corpo -->
+              <rect x="10" y="50" width="30" height="50" rx="4" fill="#1976d2"/>
+              <polygon points="22,62 28,62 30,68 25,72 20,68" fill="#fff03c"/>
+              <!-- braccio sinistro che tiene Nyx -->
+              <rect x="-10" y="55" width="22" height="8" rx="2" fill="#1976d2" transform="rotate(-15 12 59)"/>
+              <circle cx="-12" cy="68" r="5" fill="#f4c4a1"/>
+              <rect x="38" y="55" width="9" height="30" rx="2" fill="#1976d2"/>
+              <!-- testa -->
+              <circle cx="25" cy="35" r="14" fill="#f4c4a1"/>
+              <path d="M 12 28 Q 25 18 38 28 L 38 32 Q 25 24 12 32 Z" fill="#5d4037"/>
+              <rect x="10" y="22" width="30" height="8" rx="2" fill="#0d47a1"/>
+              <rect x="6" y="28" width="38" height="3" fill="#0d47a1"/>
+              <polygon points="20,22 30,22 27,16 23,16" fill="#fff03c"/>
+              <circle cx="20" cy="36" r="1.5" fill="#000"/>
+              <circle cx="30" cy="36" r="1.5" fill="#000"/>
+              <line x1="22" y1="42" x2="28" y2="42" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+              </g>
+            </g>
+
+            </g><!-- /people-group -->
+
+            <!-- Testo "ARRESTATO!" che appare durante l'animazione -->
+            <g class="arrest-text" transform="translate(400, 180)">
+              <rect x="-90" y="-25" width="180" height="50" rx="8" fill="#ff1744" stroke="#fff" stroke-width="3"/>
+              <text x="0" y="8" font-family="monospace" font-size="26" font-weight="bold" fill="#fff" text-anchor="middle">ARRESTATO!</text>
+            </g>
+
+            <!-- Cartello AGENZIA FENICE in alto a destra -->
+            <g transform="translate(620, 50)">
+              <rect x="0" y="0" width="160" height="50" rx="6" fill="#0a0e27" stroke="#00f0ff" stroke-width="2"/>
+              <text x="80" y="22" font-family="monospace" font-size="11" font-weight="bold" fill="#00f0ff" text-anchor="middle">🔥 AGENZIA FENICE</text>
+              <text x="80" y="38" font-family="monospace" font-size="9" fill="#39ff14" text-anchor="middle">CASO RISOLTO ✓</text>
+            </g>
+          </svg>
+        </div>
+
+        <p class="scene-caption">— "Mi avete preso! Tutto per colpa di quei bambini..." —</p>
+
+        <div class="narration" style="text-align: center; font-size: 1.15em; margin: 30px 0;">
+          <p style="margin-bottom: 15px;"><strong>Agenti, ce l'avete fatta!</strong></p>
+          <p>L'attacco è stato <strong>fermato</strong>, Nyx è stato <strong>catturato</strong> e ora andrà davanti al giudice. 👮‍♂️🚓</p>
+          <p>I dati sono al sicuro, l'Agenzia Fenice ha vinto e voi siete ufficialmente <strong>esperti di cybersicurezza</strong>!</p>
+        </div>
+
+        <div style="background: rgba(57, 255, 20, 0.1); border: 2px solid var(--neon-green); border-radius: 15px; padding: 25px; margin: 30px 0;">
+          <h2 style="color: var(--neon-green); text-align: center; margin-bottom: 20px;">🏆 ABILITÀ SBLOCCATE</h2>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; text-align: center;">
+            <div>
+              <div style="font-size: 2.5em;">🔐</div>
+              <div style="color: var(--neon-cyan); font-weight: bold; margin-top: 5px; font-size: 0.9em;">CRITTOGRAFIA</div>
+            </div>
+            <div>
+              <div style="font-size: 2.5em;">🔑</div>
+              <div style="color: var(--neon-cyan); font-weight: bold; margin-top: 5px; font-size: 0.9em;">PASSWORD</div>
+            </div>
+            <div>
+              <div style="font-size: 2.5em;">🎣</div>
+              <div style="color: var(--neon-cyan); font-weight: bold; margin-top: 5px; font-size: 0.9em;">ANTI-PHISHING</div>
+            </div>
+            <div>
+              <div style="font-size: 2.5em;">🗺️</div>
+              <div style="color: var(--neon-cyan); font-weight: bold; margin-top: 5px; font-size: 0.9em;">OSINT</div>
+            </div>
+            <div>
+              <div style="font-size: 2.5em;">🖼️</div>
+              <div style="color: var(--neon-cyan); font-weight: bold; margin-top: 5px; font-size: 0.9em;">STEGANOGRAFIA</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip-box" style="text-align: left;">
+          <h4>🛡️ RICORDA, AGENTE</h4>
+          <p>La cybersicurezza non è un gioco solo per esperti. Ogni volta che usi internet — chatti, pubblichi una foto, clicchi un link — sei tu il primo a difendere te stesso/a. Le 5 armi che hai imparato oggi ti accompagneranno per tutta la vita digitale.</p>
+        </div>
+
+        <div class="text-center mt-20">
+          <a href="index.html" class="btn btn-secondary">🔄 Rifai la missione</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/fenice.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = FENICE.renderHeader();
+
+    // === Animazione coriandoli/fireworks ===
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const colors = ['#00f0ff', '#ff2e9a', '#39ff14', '#fff03c', '#ff8c00'];
+    const particles = [];
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.vx = (Math.random() - 0.5) * 8;
+        this.vy = (Math.random() - 0.5) * 8 - 3;
+        this.size = Math.random() * 4 + 2;
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.life = 1.0;
+        this.gravity = 0.1;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += this.gravity;
+        this.life -= 0.012;
+      }
+      draw() {
+        ctx.globalAlpha = this.life;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function explosion(x, y) {
+      for (let i = 0; i < 50; i++) {
+        particles.push(new Particle(x, y));
+      }
+    }
+
+    function animate() {
+      ctx.fillStyle = 'rgba(10, 14, 39, 0.15)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        particles[i].draw();
+        if (particles[i].life <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+      ctx.globalAlpha = 1;
+
+      requestAnimationFrame(animate);
+    }
+
+    function randomExplosion() {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height * 0.6;
+      explosion(x, y);
+    }
+
+    for (let i = 0; i < 5; i++) {
+      setTimeout(randomExplosion, i * 300);
+    }
+    setInterval(randomExplosion, 1500);
+
+    animate();
+  </script>
+</body>
+</html>

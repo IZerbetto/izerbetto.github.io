@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prova 2 - Password | Agenzia Fenice</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    /* === Sezioni a step === */
+    .step-section {
+      display: none;
+      animation: slideIn 0.4s ease;
+    }
+    .step-section.active {
+      display: block;
+    }
+
+    /* === Riordino password === */
+    .ranking-area {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin: 25px 0;
+    }
+    .pwd-card {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(255, 46, 154, 0.08));
+      border: 2px solid var(--neon-cyan);
+      border-radius: 10px;
+      padding: 15px 20px;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transition: all 0.2s;
+      user-select: none;
+      touch-action: none;
+    }
+    .pwd-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
+    }
+    .pwd-card.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+    .pwd-card.drag-over {
+      border-color: var(--neon-yellow);
+      box-shadow: 0 0 20px rgba(255, 240, 60, 0.5);
+    }
+    .pwd-rank {
+      width: 50px;
+      height: 50px;
+      flex-shrink: 0;
+      background: var(--bg-darker);
+      border: 2px solid var(--neon-pink);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4em;
+      font-weight: bold;
+      color: var(--neon-pink);
+    }
+    .pwd-text {
+      flex: 1;
+      font-family: 'Courier New', monospace;
+      font-size: 1.2em;
+      color: var(--neon-yellow);
+      letter-spacing: 1px;
+      word-break: break-all;
+    }
+    .pwd-handle {
+      color: var(--text-dim);
+      font-size: 1.5em;
+      flex-shrink: 0;
+    }
+
+    .ranking-legend {
+      display: flex;
+      justify-content: space-between;
+      margin: 15px 0 10px;
+      color: var(--text-dim);
+      font-size: 0.85em;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .ranking-legend .top { color: var(--neon-green); }
+    .ranking-legend .bot { color: var(--danger); }
+
+    .move-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .move-btn {
+      background: var(--bg-darker);
+      border: 1px solid var(--border-glow);
+      color: var(--neon-cyan);
+      width: 32px;
+      height: 28px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1.2em;
+      line-height: 1;
+      padding: 0;
+    }
+    .move-btn:hover {
+      background: rgba(0, 240, 255, 0.1);
+    }
+    .move-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="header"></div>
+    <div id="progress"></div>
+
+    <div class="card">
+      <h1>🔑 PROVA 2 — PASSWORD</h1>
+
+      <div class="narration">
+        <p>Ottimo lavoro con i messaggi cifrati! 🎉</p>
+        <p>Ora dobbiamo capire <strong>come Nyx riesce a entrare</strong> negli account delle sue vittime.</p>
+        <p>Il segreto è uno solo: le password deboli. Questa prova ha <strong>due step</strong>: prima crei tu una password super-sicura, poi metti in ordine queste 5 password che Nyx ha rubato.</p>
+      </div>
+
+      <!-- ============ STEP 1: CREA PASSWORD ============ -->
+      <div class="step-section active" id="step1">
+        <div class="mission-box">
+          <h3>🎯 STEP 1 — CREA UNA PASSWORD SUPER-SICURA</h3>
+          <p>Crea una password che rispetti TUTTE queste regole:</p>
+          <ul>
+            <li><strong>Esattamente 14 caratteri</strong> (né uno di più, né uno di meno!)</li>
+            <li>Almeno una <strong>lettera maiuscola</strong> (A-Z)</li>
+            <li>Almeno una <strong>lettera minuscola</strong> (a-z)</li>
+            <li>Almeno un <strong>numero</strong> (0-9)</li>
+            <li>Almeno un <strong>simbolo</strong> (! @ # $ % ecc.)</li>
+          </ul>
+        </div>
+
+        <div class="tool-box">
+          <div class="input-group">
+            <label for="password">CREA LA TUA PASSWORD</label>
+            <input type="text" id="password" placeholder="La tua password..." autocomplete="off">
+          </div>
+
+          <div class="strength-meter">
+            <div class="strength-fill" id="strengthFill"></div>
+          </div>
+
+          <div class="password-checks" id="checks">
+            <div class="check-item" data-check="length">⬜ Esattamente 14 caratteri (<span id="lenCount">0</span>/14)</div>
+            <div class="check-item" data-check="upper">⬜ Almeno una MAIUSCOLA</div>
+            <div class="check-item" data-check="lower">⬜ Almeno una minuscola</div>
+            <div class="check-item" data-check="number">⬜ Almeno un numero</div>
+            <div class="check-item" data-check="symbol">⬜ Almeno un simbolo</div>
+          </div>
+
+          <div class="text-center mt-20">
+            <button class="btn" onclick="verifyPassword()">VERIFICA E PASSA ALLO STEP 2</button>
+          </div>
+        </div>
+
+        <div id="message1"></div>
+      </div>
+
+      <!-- ============ STEP 2: RIORDINA ============ -->
+      <div class="step-section" id="step2">
+        <div class="mission-box">
+          <h3>🎯 STEP 2 — METTI IN ORDINE QUESTE PASSWORD</h3>
+          <p>Nyx ha rubato 5 password ai suoi bersagli. Riordina le carte: <strong>la più sicura in alto, la più debole in basso</strong>.</p>
+          <p>Usa le frecce ⬆️⬇️ per spostare ogni password.</p>
+        </div>
+
+        <div class="ranking-legend">
+          <span class="top">⬆️ PIÙ SICURA</span>
+          <span class="bot">PIÙ DEBOLE ⬇️</span>
+        </div>
+
+        <div class="ranking-area" id="rankingArea">
+          <!-- Le carte vengono inserite via JS -->
+        </div>
+
+        <div class="text-center mt-20">
+          <button class="btn btn-large" onclick="checkRanking()">🔍 VERIFICA L'ORDINE</button>
+        </div>
+
+        <div id="message2"></div>
+      </div>
+
+      <div id="codeReveal"></div>
+      <div id="nextBtn"></div>
+    </div>
+
+    <div id="codesTracker"></div>
+  </div>
+
+  <script src="assets/js/fenice.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = FENICE.renderHeader();
+    document.getElementById('progress').innerHTML = FENICE.renderProgressBar(2);
+    document.getElementById('codesTracker').innerHTML = FENICE.renderCodesTracker();
+
+    // ============ STEP 1: PASSWORD ============
+    const passwordInput = document.getElementById('password');
+    const strengthFill = document.getElementById('strengthFill');
+
+    function analyzePassword(pwd) {
+      return {
+        length: pwd.length === 14,
+        upper: /[A-Z]/.test(pwd),
+        lower: /[a-z]/.test(pwd),
+        number: /[0-9]/.test(pwd),
+        symbol: /[^A-Za-z0-9]/.test(pwd),
+        len: pwd.length
+      };
+    }
+
+    function updateChecks() {
+      const pwd = passwordInput.value;
+      const result = analyzePassword(pwd);
+      document.getElementById('lenCount').textContent = result.len;
+
+      let validCount = 0;
+      ['length', 'upper', 'lower', 'number', 'symbol'].forEach(key => {
+        const el = document.querySelector(`[data-check="${key}"]`);
+        if (result[key]) {
+          el.classList.add('valid');
+          el.innerHTML = el.innerHTML.replace('⬜', '✅');
+          validCount++;
+        } else {
+          el.classList.remove('valid');
+          el.innerHTML = el.innerHTML.replace('✅', '⬜');
+        }
+      });
+
+      const percent = (validCount / 5) * 100;
+      strengthFill.style.width = percent + '%';
+      if (percent === 100) {
+        strengthFill.style.background = 'var(--neon-green)';
+      } else if (percent >= 60) {
+        strengthFill.style.background = 'var(--neon-yellow)';
+      } else {
+        strengthFill.style.background = 'var(--danger)';
+      }
+    }
+
+    passwordInput.addEventListener('input', updateChecks);
+
+    function verifyPassword() {
+      const pwd = passwordInput.value;
+      const result = analyzePassword(pwd);
+      const allValid = result.length && result.upper && result.lower && result.number && result.symbol;
+
+      if (allValid) {
+        FENICE.showMessage('message1', 'success', '✅ PASSWORD SUPER-SICURA! Ora passiamo al riordino.');
+        setTimeout(() => {
+          document.getElementById('step1').classList.remove('active');
+          document.getElementById('step2').classList.add('active');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 1500);
+      } else {
+        let missing = [];
+        if (!result.length) missing.push(`servono esattamente 14 caratteri (ne hai ${result.len})`);
+        if (!result.upper) missing.push('manca una MAIUSCOLA');
+        if (!result.lower) missing.push('manca una minuscola');
+        if (!result.number) missing.push('manca un numero');
+        if (!result.symbol) missing.push('manca un simbolo');
+        FENICE.showMessage('message1', 'error', '❌ ' + missing.join(', '));
+      }
+    }
+
+    // ============ STEP 2: RIORDINO ============
+
+    // Le 5 password in ordine CORRETTO (dalla più sicura alla più debole)
+    const CORRECT_ORDER = [
+      'M!aLuc3@2024#Pizza',  // 1. fortissima: 18 char, mix completo, lunga
+      'Estate!2024',         // 2. media-forte: 11 char, mix base
+      'Marco1985',           // 3. media-debole: lettere + numeri ma nome+anno
+      'pippo123',            // 4. debole: tutto minuscolo, parola comune
+      '12345'                // 5. debolissima: solo numeri sequenziali
+    ];
+
+    // Mescola le password per la presentazione iniziale
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    let currentOrder = shuffleArray(CORRECT_ORDER);
+    // Assicuriamoci che non sia già nell'ordine giusto
+    while (JSON.stringify(currentOrder) === JSON.stringify(CORRECT_ORDER)) {
+      currentOrder = shuffleArray(CORRECT_ORDER);
+    }
+
+    function renderRanking() {
+      const area = document.getElementById('rankingArea');
+      area.innerHTML = '';
+      currentOrder.forEach((pwd, idx) => {
+        const card = document.createElement('div');
+        card.className = 'pwd-card';
+        card.innerHTML = `
+          <div class="pwd-rank">${idx + 1}</div>
+          <div class="pwd-text">${pwd}</div>
+          <div class="move-buttons">
+            <button class="move-btn" onclick="moveCard(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>⬆</button>
+            <button class="move-btn" onclick="moveCard(${idx}, 1)" ${idx === currentOrder.length - 1 ? 'disabled' : ''}>⬇</button>
+          </div>
+        `;
+        area.appendChild(card);
+      });
+    }
+
+    function moveCard(index, direction) {
+      const newIndex = index + direction;
+      if (newIndex < 0 || newIndex >= currentOrder.length) return;
+      [currentOrder[index], currentOrder[newIndex]] = [currentOrder[newIndex], currentOrder[index]];
+      renderRanking();
+    }
+
+    function checkRanking() {
+      const isCorrect = currentOrder.every((pwd, idx) => pwd === CORRECT_ORDER[idx]);
+
+      if (isCorrect) {
+        FENICE.showMessage('message2', 'success', '🎉 PERFETTO! Hai capito quali password resistono ai criminali e quali sono fragili.');
+        revealCode();
+      } else {
+        // Conta quante sono in posizione corretta per dare feedback
+        let correctCount = 0;
+        currentOrder.forEach((pwd, idx) => {
+          if (pwd === CORRECT_ORDER[idx]) correctCount++;
+        });
+        FENICE.showMessage('message2', 'error', `❌ Non ancora! Hai ${correctCount} su 5 in posizione giusta. Pensa: lunghezza, varietà di caratteri, prevedibilità.`);
+      }
+    }
+
+    function revealCode() {
+      const code = FENICE.CODES[2];
+      FENICE.saveCode(2, code);
+      document.getElementById('codeReveal').innerHTML = `
+        <div class="code-reveal">
+          <div class="label">🎯 SECONDO CODICE CASSAFORTE</div>
+          <div class="code">${code}</div>
+          <div class="reminder">📝 Scrivilo subito sulla Scheda Missione!</div>
+        </div>
+      `;
+      document.getElementById('nextBtn').innerHTML = `
+        <div class="text-center mt-20">
+          <a href="gate-3.html" class="btn btn-success btn-large">PROVA SUCCESSIVA →</a>
+        </div>
+      `;
+      document.getElementById('codesTracker').innerHTML = FENICE.renderCodesTracker();
+    }
+
+    // Init
+    renderRanking();
+  </script>
+</body>
+</html>

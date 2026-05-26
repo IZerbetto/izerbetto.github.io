@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prova 5 - Steganografia | Agenzia Fenice</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .stego-workspace {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 20px;
+      margin: 25px 0;
+      align-items: start;
+    }
+
+    .stego-image-wrapper {
+      background: var(--bg-darker);
+      border: 2px solid var(--border-glow);
+      border-radius: 12px;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    .stego-image-wrapper img {
+      width: 100%;
+      display: block;
+      border-radius: 8px;
+      transition: filter 0.1s;
+    }
+
+    .stego-controls {
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid var(--neon-cyan);
+      border-radius: 12px;
+      padding: 20px;
+      position: sticky;
+      top: 20px;
+    }
+
+    .stego-controls h3 {
+      color: var(--neon-cyan);
+      margin-top: 0;
+      text-align: center;
+      font-size: 1em;
+      letter-spacing: 2px;
+    }
+
+    .control-group {
+      margin-bottom: 18px;
+    }
+
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      color: var(--neon-cyan);
+      font-size: 0.8em;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .control-group label span {
+      color: var(--neon-yellow);
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      accent-color: var(--neon-cyan);
+    }
+
+    .reset-btn {
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      border: 2px solid var(--neon-pink);
+      color: var(--neon-pink);
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      cursor: pointer;
+      font-weight: bold;
+      letter-spacing: 1px;
+      transition: all 0.2s;
+    }
+
+    .reset-btn:hover {
+      background: rgba(255, 46, 154, 0.1);
+    }
+
+    @media (max-width: 800px) {
+      .stego-workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .stego-controls {
+        position: static;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div id="header"></div>
+    <div id="progress"></div>
+
+    <div class="card">
+      <h1>🖼️ PROVA 5 — STEGANOGRAFIA</h1>
+
+      <div class="narration">
+        <p>Ultima prova, agenti! 🔥</p>
+        <p>Nyx ha inviato ai suoi complici una <strong>foto apparentemente innocua</strong>. Ma le immagini possono
+          nascondere molto più di quello che si vede a occhio nudo: questa tecnica si chiama
+          <strong>steganografia</strong>.
+        </p>
+        <p>Dentro questa immagine c'è una <strong>parola nascosta</strong>. Devi rivelarla per ottenere l'ultimo codice.
+        </p>
+      </div>
+
+      <div class="tip-box">
+        <h4>💡 COME RIVELARE IL MESSAGGIO</h4>
+        <p>A occhio nudo non si vede niente di chiaro... ma puoi <strong>modificare contrasto, luminosità e
+            saturazione</strong> con i comandi a destra dell'immagine. Sposta gli slider e vedi cosa appare!</p>
+      </div>
+
+      <div class="stego-workspace">
+        <div class="stego-image-wrapper">
+          <img src="assets/img/messaggio_nyx.png" alt="Messaggio cifrato di Nyx" id="stegoImg">
+        </div>
+
+        <div class="stego-controls">
+          <h3>🔧 ANALISI IMMAGINE</h3>
+
+          <div class="control-group">
+            <label>CONTRASTO <span id="contrastVal">100%</span></label>
+            <input type="range" id="contrast" min="70" max="130" value="100">
+          </div>
+
+          <div class="control-group">
+            <label>LUMINOSITÀ <span id="brightnessVal">100%</span></label>
+            <input type="range" id="brightness" min="100" max="300" value="100">
+          </div>
+
+          <div class="control-group">
+            <label>SATURAZIONE <span id="saturateVal">100%</span></label>
+            <input type="range" id="saturate" min="0" max="300" value="100">
+          </div>
+
+          <button class="reset-btn" onclick="resetFilters()">🔄 RESET</button>
+        </div>
+      </div>
+
+      <div class="mission-box">
+        <h3>✅ INSERISCI LA PAROLA NASCOSTA</h3>
+        <p>Quando l'hai vista chiaramente, scrivila qui sotto:</p>
+        <div class="input-group">
+          <input type="text" id="solution" placeholder="Parola nascosta..." style="text-transform: uppercase;"
+            autocomplete="off">
+        </div>
+        <button class="btn" onclick="checkSolution()">VERIFICA</button>
+      </div>
+
+      <div id="message"></div>
+      <div id="codeReveal"></div>
+      <div id="nextBtn"></div>
+
+      <div class="tip-box"
+        style="margin-top: 30px; background: rgba(255, 46, 154, 0.05); border-color: var(--neon-pink);">
+        <h4 style="color: var(--neon-pink);">🛡️ DEBRIEF — Cosa abbiamo imparato</h4>
+        <p style="margin-bottom: 0;">La <strong>steganografia</strong> è l'arte di nascondere un messaggio dentro un
+          altro file (immagine, audio, video). I criminali la usano per comunicare di nascosto, ma anche le foto comuni
+          che pubblichiamo online contengono tantissime informazioni nascoste (data, luogo, modello del telefono…). Per
+          questo è importante <strong>controllare cosa condividiamo</strong>!</p>
+      </div>
+    </div>
+
+    <div id="codesTracker"></div>
+  </div>
+
+  <script src="assets/js/fenice.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = FENICE.renderHeader();
+    document.getElementById('progress').innerHTML = FENICE.renderProgressBar(5);
+    document.getElementById('codesTracker').innerHTML = FENICE.renderCodesTracker();
+
+    const img = document.getElementById('stegoImg');
+    const contrast = document.getElementById('contrast');
+    const brightness = document.getElementById('brightness');
+    const saturate = document.getElementById('saturate');
+
+    function applyFilters() {
+      const c = contrast.value;
+      const b = brightness.value;
+      const s = saturate.value;
+      img.style.filter = `contrast(${c}%) brightness(${b}%) saturate(${s}%)`;
+      document.getElementById('contrastVal').textContent = c + '%';
+      document.getElementById('brightnessVal').textContent = b + '%';
+      document.getElementById('saturateVal').textContent = s + '%';
+    }
+
+    contrast.addEventListener('input', applyFilters);
+    brightness.addEventListener('input', applyFilters);
+    saturate.addEventListener('input', applyFilters);
+
+    function resetFilters() {
+      contrast.value = 100;
+      brightness.value = 100;
+      saturate.value = 100;
+      applyFilters();
+    }
+
+    function checkSolution() {
+      const sol = document.getElementById('solution').value.trim().toUpperCase();
+      const correct = FENICE.SOLUTIONS[5];
+
+      if (sol === correct) {
+        FENICE.showMessage('message', 'success', '✅ INCREDIBILE! Hai svelato il messaggio nascosto.');
+        revealCode();
+      } else if (sol) {
+        FENICE.showMessage('message', 'error', '❌ Non è la parola giusta. Prova ad alzare il contrasto al massimo!');
+      } else {
+        FENICE.showMessage('message', 'error', '❌ Inserisci la parola che hai visto!');
+      }
+    }
+
+    function revealCode() {
+      const code = FENICE.CODES[5];
+      FENICE.saveCode(5, code);
+      document.getElementById('codeReveal').innerHTML = `
+        <div class="code-reveal">
+          <div class="label">🎯 QUINTO E ULTIMO CODICE CASSAFORTE</div>
+          <div class="code">${code}</div>
+          <div class="reminder">📝 Hai tutti e 5 i codici! È ora di aprire la cassaforte!</div>
+        </div>
+      `;
+      document.getElementById('nextBtn').innerHTML = `
+        <div class="text-center mt-20">
+          <a href="cassaforte.html" class="btn btn-success btn-large">🔓 APRI LA CASSAFORTE FINALE →</a>
+        </div>
+      `;
+      document.getElementById('codesTracker').innerHTML = FENICE.renderCodesTracker();
+    }
+
+    document.getElementById('solution').addEventListener('keypress', e => {
+      if (e.key === 'Enter') checkSolution();
+    });
+  </script>
+</body>
+
+</html>

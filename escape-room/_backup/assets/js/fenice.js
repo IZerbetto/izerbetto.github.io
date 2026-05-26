@@ -12,7 +12,7 @@ const FENICE = {
     5: '51'
   },
 
-  // Codici formatore (per sbloccare i gate tra le prove)
+  // Codici formatrice (per sbloccare i gate tra le prove)
   GATE_CODES: {
     2: 'FIREWALL',  // sblocca prova 2
     3: 'CRYPTO',    // sblocca prova 3
