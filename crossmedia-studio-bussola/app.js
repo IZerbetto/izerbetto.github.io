@@ -10,7 +10,7 @@ function intranetLogin(ev){
   ev.preventDefault();
   var u=norm(document.getElementById("u").value),p=norm(document.getElementById("p").value);
   var m=document.getElementById("m");
-  if(h(u+":"+p)===HASH.login){document.getElementById("loginbox").style.display="none";document.getElementById("bacheca").style.display="block";}
+  if(h(u+":"+p)===HASH.login){document.getElementById("loginbox").style.display="none";var bb=document.getElementById("bacheca");bb.innerHTML=atob("PGgyPkJhY2hlY2EgaW50ZXJuYTwvaDI+CjxkaXYgY2xhc3M9ImNhcmQiPjxoMz5BdnZpc28gYSB0dXR0byBpbCB0ZWFtPC9oMz48cD5SaWNvcmRhdGV2aSBkaSBhZ2dpb3JuYXJlIGkgbGlzdGluaSBkZWkgY2xpZW50aSBlbnRybyB2ZW5lcmQmIzIzNjsuIEFjY2Vzc28gYWwgc2VydmVyIGZpbGU6IHN0ZXNzYSBwYXNzd29yZCBkaSBzZW1wcmUuPC9wPjxwIHN0eWxlPSJtYXJnaW4tdG9wOjE0cHgiPkNvZGljZSBpbnRlcm5vOiA8c3BhbiBjbGFzcz0iY29kZSI+UkVURS01ODwvc3Bhbj48L3A+PC9kaXY+CjxkaXYgY2xhc3M9ImNhcmQiIHN0eWxlPSJtYXJnaW4tdG9wOjE2cHgiPjxoMz5NZXNzYWdnaW8gZGVsIHRpdG9sYXJlIChjaWZyYXRvKTwvaDM+PHA+TG8gbGFzY2lvIHF1aSBjaWZyYXRvLCBjb21lIGZhY2V2YW1vIGEgbGV6aW9uZTogY2lmcmFyaW8gZGkgQ2VzYXJlLCBzcG9zdGFtZW50byAzLjwvcD48cCBzdHlsZT0ibWFyZ2luLXRvcDoxMnB4O2ZvbnQtZmFtaWx5OkNvbnNvbGFzLE1lbmxvLG1vbm9zcGFjZTtmb250LXNpemU6MThweCI+RlJHTEZIIElMUURPSCBQRFNTRCBXVURXV0xRUiBSV1dEUVdEPC9wPjwvZGl2Pg==");bb.style.display="block";}
   else{m.className="msg err";m.textContent="Credenziali non valide. Riprova.";}
   return false;
 }
@@ -18,14 +18,14 @@ function recupero(ev){
   ev.preventDefault();
   var a=[1,2,3].map(function(i){return norm(document.getElementById("q"+i).value);}).join("|");
   var m=document.getElementById("rm");
-  if(h(a)===HASH.rec){m.className="msg ok";m.innerHTML='Risposte corrette. Ti abbiamo inviato un’email di conferma. (Demo: codice di conferma <span class="code">RICORDO-19</span>)';}
+  if(h(a)===HASH.rec){m.className="msg ok";m.innerHTML='Risposte corrette. Ti abbiamo inviato un’email di conferma. (Demo: codice di conferma <span class="code">'+atob("UklDT1JETy0xOQ==")+'</span>)';}
   else{m.className="msg err";m.textContent="Una o più risposte non sono corrette.";}
   return false;
 }
 
 // ---- Area clienti ----
 var CLIENTI={
- "100":{azienda:"Studio Bussola (archivio interno)",ref:"Luca Ferrandi",mail:"luca.ferrandi@studiobussola.example",prog:"Contratti e accessi dei clienti",stato:"Riservato",bud:"-",note:"Cartella interna visibile per errore dal link progetto. Codice archivio: VELA-14"},
+ "100":{azienda:"Studio Bussola (archivio interno)",ref:"Luca Ferrandi",mail:"luca.ferrandi@studiobussola.example",prog:"Contratti e accessi dei clienti",stato:"Riservato",bud:"-",note:"Cartella interna visibile per errore dal link progetto. Codice archivio: "+atob("VkVMQS0xNA==")},
  "101":{azienda:"Panificio Il Fornaio Blu",ref:"Anna Rizzi",mail:"anna.rizzi@fornaioblu.example",prog:"Restyling logo e vetrina",stato:"Consegnato",bud:"4.200 euro",note:"Fattura saldata. Banca: IT00 X000 0000 0000 0000 0000 000"},
  "102":{azienda:"Officine Tessari",ref:"Marco Tessari",mail:"marco@officinetessari.example",prog:"Sito vetrina e catalogo",stato:"In corso",bud:"7.800 euro",note:"Il cliente vuole il listino prezzi nascosto ai concorrenti."},
  "103":{azienda:"Studio Dentistico Moro",ref:"Dott.ssa Elisa Moro",mail:"studio@dentistamoro.example",prog:"Campagna social di apertura",stato:"In corso",bud:"3.500 euro",note:"Elenco pazienti usato per newsletter (da verificare consenso)."},
@@ -63,7 +63,7 @@ function mailInit(){
 function mailSend(){
   var ok=true;MAILS.forEach(function(m,i){if(document.getElementById("mc"+i).checked!==m.p)ok=false;});
   var out=document.getElementById("mm");
-  if(ok){out.className="msg ok";out.innerHTML='Segnalazione ricevuta: erano proprio tentativi di phishing. Grazie! <span class="code">POSTA-21</span>';}
+  if(ok){out.className="msg ok";out.innerHTML='Segnalazione ricevuta: erano proprio tentativi di phishing. Grazie! <span class="code">'+atob("UE9TVEEtMjE=")+'</span>';}
   else{out.className="msg err";out.textContent="Giulio risponde: “Controllati, qualcosa non torna.” (Una scelta è sbagliata o manca.)";}
 }
 
