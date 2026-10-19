@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Area riservata · Studio Bussola</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="logo" href="index.html"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="none" stroke="#C8F25A" stroke-width="3"/><polygon points="20,7 25,20 20,33 15,20" fill="#FF8A4C"/></svg> Studio Bussola</a>
+<nav><a href="index.html">Home</a><a href="servizi.html">Servizi</a><a href="portfolio.html">Portfolio</a><a href="chi-siamo.html">Chi siamo</a><a href="news.html">News</a><a href="contatti.html">Contatti</a><a class="btn" href="progetto.html?id=104">Area clienti</a></nav>
+</div></header>
+<section class="block"><div class="wrap"><div id="loginbox"><h2>Area riservata</h2>
+<form class="login" onsubmit="return intranetLogin(event)">
+<label for="u">Utente (nome.cognome)</label><input type="text" id="u" autocomplete="off">
+<label for="p">Password</label><input type="password" id="p" autocomplete="off">
+<button type="submit">Entra</button>
+<p class="msg" id="m"></p>
+<p style="font-size:14px;margin-top:10px"><a href="recupero.html">Password dimenticata? Recuperala qui.</a></p>
+</form></div>
+<div id="bacheca" style="display:none"><h2>Bacheca interna</h2>
+<div class="card"><h3>Avviso a tutto il team</h3><p>Ricordatevi di aggiornare i listini dei clienti entro venerdì. Accesso al server file: stessa password di sempre.</p><p style="margin-top:14px">Codice interno: <span class="code">RETE-58</span></p></div>
+<div class="card" style="margin-top:16px"><h3>Messaggio del titolare (cifrato)</h3><p>Lo lascio qui cifrato, come facevamo a lezione: cifrario di Cesare, spostamento 3.</p><p style="margin-top:12px;font-family:Consolas,Menlo,monospace;font-size:18px">FRGLFH ILQDOH PDSSD WUDWWLQR RWWDQWD</p></div></div></div></section>
+<footer><div class="wrap"><span>Studio Bussola s.n.c. · via dei Mille 12 · 37100 Verona · P.IVA 00000000000</span><span><a href="intranet.html">Area riservata</a> · <a href="webmail.html">Webmail</a> · <a href="lavora-con-noi.html">Lavora con noi</a> · <a href="privacy.html">Privacy</a></span></div>
+<div class="wrap" style="padding-top:8px"><span>Esercizio didattico: agenzia, persone e dati inventati.</span></div></footer>
+<script src="app.js"></script>
+
+</body>
+</html>

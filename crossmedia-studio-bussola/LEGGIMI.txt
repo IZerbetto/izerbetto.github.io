@@ -1,0 +1,26 @@
+STUDIO BUSSOLA - sito didattico per il Lab 2 (agenzia, persone e dati inventati)
+
+PUBBLICARE SU GITHUB PAGES
+  1. Crea un repository pubblico (es. "studio-bussola") e carica TUTTO il contenuto di questa cartella
+     (index.html, missione.html, app.js, style.css, la cartella img, ecc.; anche il file nascosto .nojekyll).
+     Carica i file, non la cartella che li contiene.
+  2. Settings > Pages > Branch "main" / cartella "/ (root)" > Save.
+  3. Dopo un minuto il sito e' su https://TUONOME.github.io/studio-bussola/
+  4. Il punto di partenza per gli studenti e' il QUADERNO: https://TUONOME.github.io/studio-bussola/missione.html
+     Scrivi questo indirizzo nella slide 8 al posto di [indirizzo del sito].
+
+SENZA INTERNET (alternativa)
+  Copia la cartella su ogni PC e apri missione.html con Chrome o Edge. Funziona tutto, anche i parametri (?id=...).
+
+PRIMA DEL LABORATORIO (10 minuti)
+  - Dal PC della scuola apri missione.html e il sito: foto in chi-siamo.html, login in intranet.html,
+    webmail.html, recupero.html, progetto.html?id=104.
+  - Scarica img/team.jpg e controlla i metadati (tasto destro > Proprieta' > Dettagli). Se la foto viene ricompressa
+    o riscaricata da una chat o dai social i metadati spariscono: gli studenti devono usare il file originale del sito.
+  - I progressi del quaderno restano nel browser di ogni PC (se serve ricominciare: link "Ricomincia da zero" in fondo).
+
+PAGINE
+  Sito dell'agenzia: index, servizi, portfolio, chi-siamo, news, contatti, lavora-con-noi, privacy, 404, intranet, recupero, webmail, progetto, condivisi.
+  Per il gioco: missione.html (quaderno con codici e aiuti), dopo-la-missione.html (missioni extra), brief-valmora.html (caso IA).
+
+Soluzioni: nella "Guida del conduttore" (PDF).
