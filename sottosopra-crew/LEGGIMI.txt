@@ -10,20 +10,23 @@ PUBBLICARE SU GITHUB PAGES
      Scrivi questo indirizzo sulla slide/lavagna di partenza.
   Da internet funziona tutto anche su tablet (la "Lente per i file" legge la foto direttamente dal sito).
 
-SENZA INTERNET (alternativa, solo PC)
+SENZA INTERNET (alternativa)
   Copia la cartella su ogni PC e apri missione.html con Chrome o Edge. Funziona tutto, anche i parametri (?id=...).
   Unica differenza: la "Lente per i file" non puo' leggere la foto da sola, quindi chiede di scegliere il file salvato.
 
 PRIMA DEL LABORATORIO (10 minuti)
   - Dal PC/tablet della scuola apri missione.html e il sito: foto in chi-siamo.html, area riservata in intranet.html,
-    webmail.html, recupero.html, ordine.html?id=104, strumenti.html.
+    webmail.html, chat.html, festival.html (Wi-Fi), voci.html, profilo.html, recupero.html, ordine.html?id=104, strumenti.html.
   - Scarica img/team.jpg e controlla i metadati (tasto destro > Proprieta' > Dettagli). Se la foto viene ricompressa
     o riscaricata da una chat o dai social i metadati spariscono: gli studenti devono usare il file originale del sito.
   - I progressi del quaderno restano nel browser di ogni dispositivo (se serve ricominciare: link "Ricomincia da zero" in fondo).
 
+PUNTEGGIO
+  Ogni enigma risolto vale 2 punti, ogni aiuto toglie 0,5. Massimo 24 punti. Il totale puo' scendere sotto zero.
+
 PAGINE
-  Sito del collettivo: index, progetti, chi-siamo, news, shop, contatti, entra-nel-crew, privacy, 404, intranet, recupero,
-  webmail, ordine, condivisi, interno-note-di-leo.
+  Sito del collettivo: index, festival, progetti, chi-siamo, news, shop, contatti, entra-nel-crew, privacy, 404,
+  intranet, recupero, webmail, chat, voci, profilo, ordine, condivisi, interno-note-di-leo.
   Per il gioco: missione.html (quaderno con codici e aiuti), strumenti.html (schede guida, si aprono dagli aiuti),
   dopo-la-missione.html (missioni extra), brief-chatbot.html (caso IA per la discussione finale).
 
