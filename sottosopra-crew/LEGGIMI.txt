@@ -1,0 +1,30 @@
+SOTTOSOPRA CREW - sito didattico per l'escape room (collettivo, persone e dati inventati)
+
+PUBBLICARE SU GITHUB PAGES
+  1. Crea un repository pubblico (es. "sottosopra-crew") e carica TUTTO il contenuto di questa cartella
+     (index.html, missione.html, app.js, style.css, la cartella img, ecc.; anche il file nascosto .nojekyll).
+     Carica i file, non la cartella che li contiene.
+  2. Settings > Pages > Branch "main" / cartella "/ (root)" > Save.
+  3. Dopo un minuto il sito e' su https://TUONOME.github.io/sottosopra-crew/
+  4. Il punto di partenza per gli studenti e' il QUADERNO: https://TUONOME.github.io/sottosopra-crew/missione.html
+     Scrivi questo indirizzo sulla slide/lavagna di partenza.
+  Da internet funziona tutto anche su tablet (la "Lente per i file" legge la foto direttamente dal sito).
+
+SENZA INTERNET (alternativa, solo PC)
+  Copia la cartella su ogni PC e apri missione.html con Chrome o Edge. Funziona tutto, anche i parametri (?id=...).
+  Unica differenza: la "Lente per i file" non puo' leggere la foto da sola, quindi chiede di scegliere il file salvato.
+
+PRIMA DEL LABORATORIO (10 minuti)
+  - Dal PC/tablet della scuola apri missione.html e il sito: foto in chi-siamo.html, area riservata in intranet.html,
+    webmail.html, recupero.html, ordine.html?id=104, strumenti.html.
+  - Scarica img/team.jpg e controlla i metadati (tasto destro > Proprieta' > Dettagli). Se la foto viene ricompressa
+    o riscaricata da una chat o dai social i metadati spariscono: gli studenti devono usare il file originale del sito.
+  - I progressi del quaderno restano nel browser di ogni dispositivo (se serve ricominciare: link "Ricomincia da zero" in fondo).
+
+PAGINE
+  Sito del collettivo: index, progetti, chi-siamo, news, shop, contatti, entra-nel-crew, privacy, 404, intranet, recupero,
+  webmail, ordine, condivisi, interno-note-di-leo.
+  Per il gioco: missione.html (quaderno con codici e aiuti), strumenti.html (schede guida, si aprono dagli aiuti),
+  dopo-la-missione.html (missioni extra), brief-chatbot.html (caso IA per la discussione finale).
+
+Soluzioni: nella "Guida del conduttore" (PDF).

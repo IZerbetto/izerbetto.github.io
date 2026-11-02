@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Webmail · Sottosopra Crew</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="logo" href="index.html"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="none" stroke="#FFD84A" stroke-width="3"/><polygon points="20,33 25,20 20,7 15,20" fill="#FF5D73"/></svg> Sottosopra Crew</a>
+<nav><a href="index.html">Home</a><a href="progetti.html">Progetti</a><a href="chi-siamo.html">Chi siamo</a><a href="news.html">News</a><a href="shop.html">Shop</a><a href="contatti.html">Contatti</a><a class="btn" href="ordine.html?id=104">Il tuo ordine</a></nav>
+</div></header>
+
+<section class="block"><div class="wrap"><h2>Webmail del crew · casella di Marta</h2>
+<p class="muted" style="max-width:720px">Marta gestisce i social e riceve tanti messaggi. Seleziona quelli che secondo te sono tentativi di truffa e premi “Segnala”.</p>
+<div id="mails" style="margin-top:20px"></div>
+<button onclick="mailSend()">Segnala i messaggi selezionati</button><p class="msg" id="mm"></p></div></section>
+
+<footer><div class="wrap"><span>Sottosopra Crew · Verona</span><span><a href="intranet.html">Area riservata</a> · <a href="webmail.html">Webmail</a> · <a href="entra-nel-crew.html">Entra nel crew</a> · <a href="privacy.html">Privacy</a></span></div><div class="wrap" style="padding-top:8px"><span>Esercizio didattico: gruppo, persone e dati inventati.</span></div></footer>
+<script src="app.js"></script>
+<script>mailInit();</script>
+</body>
+</html>

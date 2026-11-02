@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schede guida</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><span class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="none" stroke="#FFD84A" stroke-width="3"/><polygon points="20,33 25,20 20,7 15,20" fill="#FF5D73"/></svg> Schede guida</span><nav><a href="missione.html">Torna al quaderno</a></nav></div></header>
+<div class="wrap"><section class="block" style="padding-bottom:0"><h2>Schede guida</h2>
+<p class="muted" style="max-width:720px">Strumenti per chi ha chiesto un aiuto. Funzionano anche da tablet.</p></section>
+
+<section id="lente" class="tool"><div class="card"><h3>Lente per i file: cosa c’è dentro una foto?</h3>
+<p style="margin-bottom:8px">Ogni foto scattata con un telefono porta con sé informazioni nascoste, i <b>metadati</b>: chi l’ha scattata, con quale telefono, a volte anche dove.</p>
+<ol>
+<li>Salvate la foto originale dal sito: tasto destro &gt; Salva immagine con nome (su tablet: tenete premuto sulla foto).</li>
+<li><b>Windows:</b> tasto destro sul file &gt; Proprietà &gt; Dettagli. <b>Mac:</b> Anteprima &gt; Strumenti &gt; Mostra Inspector.</li>
+<li>Oppure usate la Lente qui sotto, che funziona su qualunque dispositivo.</li>
+</ol>
+<button onclick="lenteSito()">Analizza la foto di gruppo del sito</button>
+<label for="lf" style="margin-top:14px">…oppure scegliete un file che avete salvato:</label><input type="file" id="lf" accept="image/jpeg" onchange="lenteFile(this)">
+<div id="lente-out" style="margin-top:16px"></div></div></section>
+
+<section id="indirizzo" class="tool"><div class="card"><h3>Com’è fatto un indirizzo web</h3>
+<p style="margin-bottom:10px">Guardate la barra in alto mentre aprite una pagina. Un indirizzo ha delle parti:</p>
+<div class="mono">https://sito.example/ordine.html?id=104</div>
+<ol style="margin-top:12px">
+<li><b>ordine.html</b>: la pagina che state guardando.</li>
+<li><b>?id=104</b>: un’informazione che dice alla pagina <i>quale</i> ordine mostrare (qui il numero 104).</li>
+<li>Se cambiate il numero e premete Invio, la pagina vi risponde con quello nuovo. Un sito fatto bene dovrebbe controllare che quell’ordine sia davvero vostro.</li>
+</ol></div></section>
+
+<section id="cesare" class="tool"><div class="card"><h3>Il cifrario di Cesare</h3>
+<p style="margin-bottom:8px">Giulio Cesare nascondeva i messaggi spostando ogni lettera di qualche posto nell’alfabeto. Con spostamento 3, la A diventa D, la B diventa E e così via. Per leggere il messaggio si fa il contrario: ogni lettera torna indietro.</p>
+<label for="disco-in">Testo da leggere</label><textarea id="disco-in" rows="2" oninput="discoAggiorna()"></textarea>
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;align-items:end">
+<div><label for="dir">Operazione</label><select id="dir" onchange="discoAggiorna()"><option value="dec">Decifrare (tornare indietro)</option><option value="enc">Cifrare (andare avanti)</option></select></div>
+<div><label for="shift">Spostamento (0-25)</label><div style="display:flex;gap:6px"><button class="ghost" style="margin:0" onclick="discoPiu(-1)">−</button><input type="number" id="shift" value="0" min="0" max="25" style="width:80px" oninput="discoAggiorna()"><button class="ghost" style="margin:0" onclick="discoPiu(1)">+</button></div></div></div>
+<p style="margin-top:16px;margin-bottom:4px" class="muted">Alfabeto normale → alfabeto spostato</p>
+<div class="mono" id="rowA"></div><div class="mono" id="rowB" style="margin-top:4px"></div>
+<p style="margin-top:16px;margin-bottom:4px" class="muted">Risultato</p>
+<div class="mono" id="disco-out" style="white-space:pre-wrap;letter-spacing:2px;min-height:44px"></div></div></section></div>
+<script src="app.js"></script>
+<script src="strumenti.js"></script><script>discoAggiorna();</script>
+</body>
+</html>
