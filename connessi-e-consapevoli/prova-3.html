@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prova 3 - Phishing | Agenzia Scudo</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .step-section { display: none; animation: slideIn 0.4s ease; }
+    .step-section.active { display: block; }
+
+    /* step progress */
+    .step-progress { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 25px 0 30px; }
+    .sp-dot { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-darker); border: 2px solid var(--border-glow); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1em; color: var(--text-dim); transition: all 0.4s ease; flex-shrink: 0; }
+    .sp-dot.active { border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 14px rgba(0,240,255,0.4); animation: pulse 2s infinite; }
+    .sp-dot.done { border-color: var(--neon-green); background: rgba(57,255,20,0.12); color: var(--neon-green); box-shadow: 0 0 10px rgba(57,255,20,0.3); animation: none; }
+    .sp-label { font-size: 0.7em; letter-spacing: 1px; color: var(--text-dim); text-align: center; margin-top: 4px; }
+    .sp-wrap { display: flex; flex-direction: column; align-items: center; }
+    .sp-line { flex: 1; max-width: 60px; height: 2px; background: var(--border-glow); margin-bottom: 18px; }
+
+    /* email card */
+    .email-card {
+      background: rgba(0,0,0,0.45);
+      border: 2px solid var(--border-glow);
+      border-radius: 12px;
+      margin-bottom: 18px;
+      overflow: hidden;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .email-card.selected-safe {
+      border-color: var(--neon-green);
+      box-shadow: 0 0 14px rgba(57,255,20,0.25);
+    }
+    .email-card.selected-phish {
+      border-color: var(--neon-pink);
+      box-shadow: 0 0 14px rgba(255,46,154,0.25);
+    }
+    .email-card.locked-correct.selected-safe {
+      border-color: var(--neon-green);
+    }
+    .email-card.locked-correct.selected-phish {
+      border-color: var(--neon-green);
+    }
+    .email-card.locked-wrong {
+      border-color: var(--danger);
+      box-shadow: 0 0 14px rgba(255,40,40,0.3);
+      animation: shake 0.4s ease;
+    }
+
+    .email-meta {
+      padding: 14px 18px 10px;
+      border-bottom: 1px solid var(--border-glow);
+    }
+    .email-from {
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      color: var(--text-dim);
+      margin-bottom: 5px;
+    }
+    .email-from strong { color: var(--neon-cyan); }
+    .email-subject {
+      font-weight: bold;
+      font-size: 1em;
+      color: var(--text-light);
+      line-height: 1.4;
+    }
+    .email-preview {
+      padding: 10px 18px;
+      font-size: 0.9em;
+      color: var(--text-dim);
+      line-height: 1.6;
+      border-bottom: 1px solid var(--border-glow);
+    }
+
+    .sort-buttons {
+      display: flex;
+      gap: 0;
+    }
+    .sort-btn {
+      flex: 1;
+      padding: 13px 10px;
+      border: none;
+      font-weight: bold;
+      font-size: 0.95em;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .sort-btn-safe {
+      background: rgba(57,255,20,0.08);
+      color: var(--neon-green);
+      border-right: 1px solid var(--border-glow);
+    }
+    .sort-btn-safe:hover:not(:disabled) { background: rgba(57,255,20,0.2); }
+    .sort-btn-safe.active { background: rgba(57,255,20,0.25); }
+    .sort-btn-phish {
+      background: rgba(255,46,154,0.08);
+      color: var(--neon-pink);
+    }
+    .sort-btn-phish:hover:not(:disabled) { background: rgba(255,46,154,0.2); }
+    .sort-btn-phish.active { background: rgba(255,46,154,0.25); }
+    .sort-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .email-explanation {
+      display: none;
+      padding: 12px 18px;
+      font-size: 0.9em;
+      line-height: 1.6;
+      border-top: 1px solid var(--border-glow);
+    }
+    .email-explanation.show { display: block; }
+    .email-explanation.expl-correct { background: rgba(57,255,20,0.07); color: var(--neon-green); }
+    .email-explanation.expl-wrong { background: rgba(255,40,40,0.07); color: var(--danger); }
+
+    .round-label {
+      text-align: center;
+      font-size: 0.8em;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .difficulty-badge {
+      display: inline-block;
+      font-size: 0.75em;
+      letter-spacing: 1px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .badge-easy { background: rgba(57,255,20,0.12); color: var(--neon-green); border: 1px solid var(--neon-green); }
+    .badge-hard { background: rgba(255,46,154,0.12); color: var(--neon-pink); border: 1px solid var(--neon-pink); }
+
+    .counter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 0 0 20px;
+      font-size: 0.9em;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+    }
+    .counter-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--border-glow);
+      transition: background 0.2s;
+    }
+    .counter-dot.done { background: var(--neon-cyan); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="header"></div>
+    <div id="progress"></div>
+
+    <div class="card">
+      <h1>🎣 PROVA 3 — PHISHING</h1>
+
+      <div class="narration">
+        <p>Una delle tecniche preferite di Nyx è il <strong>phishing</strong>: invia email false che sembrano vere per rubare dati e password.</p>
+        <p>L'agenzia ha intercettato <strong>8 email</strong> dirette alle vittime di Nyx. Alcune sono vere, alcune sono false. <strong>Classificatele tutte</strong> per smascherarlo!</p>
+      </div>
+
+      <!-- Indicatore step -->
+      <div class="step-progress">
+        <div class="sp-wrap">
+          <div class="sp-dot active" id="sp1">1</div>
+          <div class="sp-label">ROUND 1</div>
+        </div>
+        <div class="sp-line"></div>
+        <div class="sp-wrap">
+          <div class="sp-dot" id="sp2">2</div>
+          <div class="sp-label">ROUND 2</div>
+        </div>
+      </div>
+
+      <!-- ============ ROUND 1: 4 email più ovvie ============ -->
+      <div class="step-section active" id="step1">
+
+        <div class="mission-box">
+          <h3>🎯 ROUND 1 — CLASSIFICA LE EMAIL <span class="difficulty-badge badge-easy">LIVELLO BASE</span></h3>
+          <p>Per ogni email premete <strong style="color:var(--neon-green)">✅ SICURA</strong> oppure <strong style="color:var(--neon-pink)">🚨 PHISHING</strong>. Poi verificate tutte e 4 insieme.</p>
+        </div>
+
+        <div class="counter-bar">
+          Classificate:
+          <div class="counter-dot" id="r1d1"></div>
+          <div class="counter-dot" id="r1d2"></div>
+          <div class="counter-dot" id="r1d3"></div>
+          <div class="counter-dot" id="r1d4"></div>
+        </div>
+
+        <!-- Email R1-1 PHISHING -->
+        <div class="email-card" id="card-r1-1">
+          <div class="email-meta">
+            <div class="email-from"><strong>Da:</strong> security@instag-ram.net</div>
+            <div class="email-subject">⚠️ Il tuo account Instagram sarà ELIMINATO entro 24 ore!</div>
+          </div>
+          <div class="email-preview">Gentile utente, il tuo profilo è stato segnalato per violazione delle norme. Clicca subito qui per evitare l'eliminazione: http://instag-ram-verify.xyz/login</div>
+          <div class="sort-buttons">
+            <button class="sort-btn sort-btn-safe" onclick="classify('r1',1,'safe')">✅ SICURA</button>
+            <button class="sort-btn sort-btn-phish" onclick="classify('r1',1,'phishing')">🚨 PHISHING</button>
+          </div>
+          <div class="email-explanation" id="expl-r1-1"></div>
+        </div>
+
+        <!-- Email R1-2 REALE -->
+        <div class="email-card" id="card-r1-2">
+          <div class="email-meta">
+            <div class="email-from"><strong>Da:</strong> noreply@spotify.com</div>
+            <div class="email-subject">Nuovi brani aggiunti alla tua playlist</div>
+          </div>
+          <div class="email-preview">Ciao! Basandoci sui tuoi ascolti recenti, abbiamo aggiunto 5 nuovi brani a "I miei preferiti". Buon ascolto!</div>
+          <div class="sort-buttons">
+            <button class="sort-btn sort-btn-safe" onclick="classify('r1',2,'safe')">✅ SICURA</button>
+            <button class="sort-btn sort-btn-phish" onclick="classify('r1',2,'phishing')">🚨 PHISHING</button>
+          </div>
+          <div class="email-explanation" id="expl-r1-2"></div>
+        </div>
+
+        <!-- Email R1-3 PHISHING -->
+        <div class="email-card" id="card-r1-3">
+          <div class="email-meta">
+            <div class="email-from"><strong>Da:</strong> premi@fortnite-vbucks-gratis.fun</div>
+            <div class="email-subject">🎮 HAI VINTO 10.000 V-Bucks GRATIS! Ritira entro 1 ora</div>
+          </div>
+          <div class="email-preview">Giocatore selezionato! Sei tra i vincitori del nostro mega-evento. Clicca subito per riscattare i tuoi V-Bucks gratuiti. Offerta valida solo per 1 ora.</div>
+          <div class="sort-buttons">
+            <button class="sort-btn sort-btn-safe" onclick="classify('r1',3,'safe')">✅ SICURA</button>
+            <button class="sort-btn sort-btn-phish" onclick="classify('r1',3,'phishing')">🚨 PHISHING</button>
+          </div>
+          <div class="email-explanation" id="expl-r1-3"></div>
+        </div>
+
+        <!-- Email R1-4 REALE -->
+        <div class="email-card" id="card-r1-4">
+          <div class="email-meta">
+            <div class="email-from"><strong>Da:</strong> conferma@amazon.it</div>
+            <div class="email-subject">Il tuo ordine #204-9183746 è in arrivo giovedì</div>
+          </div>
+          <div class="email-preview">Abbiamo spedito il tuo ordine. Consegna prevista: giovedì 29 maggio. Puoi seguire il pacco nella sezione "I miei ordini" del tuo account.</div>
+          <div class="sort-buttons">
+            <button class="sort-btn sort-btn-safe" onclick="classify('r1',4,'safe')">✅ SICURA</button>
+            <button class="sort-btn sort-btn-phish" onclick="classify('r1',4,'phishing')">🚨 PHISHING</button>
+          </div>
+          <div class="email-explanation" id="expl-r1-4"></div>
+        </div>
+
+        <div class="text-center mt-20">
+          <button class="btn btn-large" onclick="checkRound(1)">🔍 VERIFICA LE 4 EMAIL</button>
+        </div>
+        <div id="message1"></div>
+
+      </div><!-- /step1 -->
+
+      <!-- ============ ROUND 2: 4 email più sottili ============ -->
+      <div class="step-section" id="step2">
+
+        <div class="mission-box">
+          <h3>🎯 ROUND 2 — CLASSIFICA LE EMAIL <span class="difficulty-badge badge-hard">LIVELLO AVANZATO</span></h3>
+          <p>Queste email sono più subdole. Controllate bene i <strong>domini del mittente</strong> e chiedetevi: <em>questa email mi chiede qualcosa di strano?</em></p>
+        </div>
+
+        <div class="counter-bar">
+          Classificate:
+          <div class="counter-dot" id="r2d1"></div>
+          <div class="counter-dot" id="r2d2"></div>
+          <div class="counter-dot" id="r2d3"></div>
+          <div class="counter-dot" id="r2d4"></div>
+        </div>
+
+        <!-- Email R2-1 PHISHING (fake Google) -->
+        <div class="email-card" id="card-r2-1">
+          <div class="email-meta">
+            <div class="email-from"><strong>Da:</strong> noreply@google-account-security.com</div>
+            <div class="email-subject">⚠️ Accesso sospetto rilevato sul tuo account Google</div>
+          </div>
+          <div class="email-preview">Abbiamo rilevato un accesso da un dispositivo sconosciuto. Per proteggere il tuo account clicca subito qui e reimposta la tua password.</div>
+          <div class="sort-buttons">
+            <button class="sort-btn sort-btn-safe" onclick="classify('r2',1,'safe')">✅ SICURA</button>
+            <button class="sort-btn sort-btn-phish" onclick="classify('r2',1,'phishing')">🚨 PHISHING</button>
+          </div>
+          <div class="email-explanation" id="expl-r2-1"></div>
+        </div>
+
+        <!-- Email R2-2 REALE (vero Google) -->
+        <div class="email-card" id="card-r2-2">
+          <div class="email-meta">
+            <div class="email-from"><strong>Da:</strong> noreply@accounts.google.com</div>
+            <div class="email-subject">Nuovo accesso al tuo Account Google</div>
+          </div>
+          <div class="email-preview">È avvenuto un nuovo accesso al tuo account da Chrome su Windows. Se sei stato tu, non devi fare nulla. Se non sei stato tu, cambia subito la password.</div>
+          <div class="sort-buttons">
+            <button class="sort-btn sort-btn-safe" onclick="classify('r2',2,'safe')">✅ SICURA</button>
+            <button class="sort-btn sort-btn-phish" onclick="classify('r2',2,'phishing')">🚨 PHISHING</button>
+          </div>
+          <div class="email-explanation" id="expl-r2-2"></div>
+        </div>
+
+        <!-- Email R2-3 PHISHING (fake scuola) -->
+        <div class="email-card" id="card-r2-3">
+          <div class="email-meta">
+            <div class="email-from"><strong>Da:</strong> segreteria@istituto-comprensivo-rimborsi.edu.it</div>
+            <div class="email-subject">Rimborso gita scolastica — Inserire dati entro venerdì</div>
+          </div>
+          <div class="email-preview">Si informa che è disponibile un rimborso di €45 per la gita di marzo. Per riceverlo, inserire IBAN e codice fiscale del genitore al link seguente entro venerdì.</div>
+          <div class="sort-buttons">
+            <button class="sort-btn sort-btn-safe" onclick="classify('r2',3,'safe')">✅ SICURA</button>
+            <button class="sort-btn sort-btn-phish" onclick="classify('r2',3,'phishing')">🚨 PHISHING</button>
+          </div>
+          <div class="email-explanation" id="expl-r2-3"></div>
+        </div>
+
+        <!-- Email R2-4 REALE (newsletter) -->
+        <div class="email-card" id="card-r2-4">
+          <div class="email-meta">
+            <div class="email-from"><strong>Da:</strong> newsletter@ilpost.it</div>
+            <div class="email-subject">Il Post — Le storie di oggi</div>
+          </div>
+          <div class="email-preview">Buongiorno! Ecco le notizie più lette di oggi: l'accordo sul clima, la partita di Champions e un articolo sulla storia dei videogiochi. Leggi su ilpost.it</div>
+          <div class="sort-buttons">
+            <button class="sort-btn sort-btn-safe" onclick="classify('r2',4,'safe')">✅ SICURA</button>
+            <button class="sort-btn sort-btn-phish" onclick="classify('r2',4,'phishing')">🚨 PHISHING</button>
+          </div>
+          <div class="email-explanation" id="expl-r2-4"></div>
+        </div>
+
+        <div class="text-center mt-20">
+          <button class="btn btn-large" onclick="checkRound(2)">🔍 VERIFICA LE 4 EMAIL</button>
+        </div>
+        <div id="message2"></div>
+
+      </div><!-- /step2 -->
+
+      <div id="codeReveal"></div>
+      <div id="nextBtn"></div>
+    </div>
+
+    <div id="codesTracker"></div>
+  </div>
+
+  <script src="assets/js/scudo.js"></script>
+  <script>
+    SCUDO.guard('prova', 3);
+    document.getElementById('header').innerHTML = SCUDO.renderHeader();
+    document.getElementById('progress').innerHTML = SCUDO.renderProgressBar(3);
+    document.getElementById('codesTracker').innerHTML = SCUDO.renderCodesTracker();
+
+    // ============ DATI EMAIL ============
+
+    const EMAIL_DATA = {
+      r1: {
+        1: { correct: 'phishing', explanation: '🚨 PHISHING! Il dominio è "instag-ram.net" con un trattino — Instagram usa solo instagram.com. Aggiungi l\'urgenza delle 24 ore e il link strano: tutti segnali classici di truffa.' },
+        2: { correct: 'safe',     explanation: '✅ SICURA. Il mittente è @spotify.com (dominio ufficiale). L\'email non chiede dati, non crea urgenza: è solo una notifica informativa.' },
+        3: { correct: 'phishing', explanation: '🚨 PHISHING! Epic Games/Fortnite non regala V-Bucks via email. Il dominio ".fun" è sospetto e le offerte "troppo belle" con scadenza brevissima sono sempre truffe.' },
+        4: { correct: 'safe',     explanation: '✅ SICURA. Mittente @amazon.it (dominio ufficiale), nessuna richiesta di dati, nessuna urgenza. È una normale conferma di spedizione.' }
+      },
+      r2: {
+        1: { correct: 'phishing', explanation: '🚨 PHISHING! Il dominio sembra ufficiale ma è falso: Google usa accounts.google.com, non "google-account-security.com". I truffatori copiano lo stile delle email vere — controllate sempre il dominio!' },
+        2: { correct: 'safe',     explanation: '✅ SICURA. Il mittente è @accounts.google.com — il dominio ufficiale di Google. L\'email informa senza chiedere di cliccare link o inserire dati immediatamente.' },
+        3: { correct: 'phishing', explanation: '🚨 PHISHING! Le scuole non chiedono mai IBAN e codice fiscale via email con un link esterno. I rimborsi scolastici si gestiscono in segreteria o tramite il registro elettronico ufficiale.' },
+        4: { correct: 'safe',     explanation: '✅ SICURA. È una newsletter da un giornale noto (@ilpost.it). Nessuna richiesta di dati, nessuna urgenza: solo informazione.' }
+      }
+    };
+
+    // ============ STATO ============
+
+    const selections = { r1: {}, r2: {} };
+    const locked = { r1: {}, r2: {} };
+
+    // ============ STEP INDICATOR ============
+
+    function setStepDone(num) {
+      const dot = document.getElementById('sp' + num);
+      dot.classList.remove('active');
+      dot.classList.add('done');
+      dot.textContent = '✓';
+      const next = document.getElementById('sp' + (num + 1));
+      if (next) next.classList.add('active');
+    }
+
+    // ============ CLASSIFICA ============
+
+    function classify(round, num, type) {
+      if (locked[round][num]) return;
+      selections[round][num] = type;
+
+      const card = document.getElementById(`card-${round}-${num}`);
+      card.classList.remove('selected-safe', 'selected-phish');
+      card.classList.add(type === 'safe' ? 'selected-safe' : 'selected-phish');
+
+      const btnSafe  = card.querySelector('.sort-btn-safe');
+      const btnPhish = card.querySelector('.sort-btn-phish');
+      btnSafe.classList.toggle('active',  type === 'safe');
+      btnPhish.classList.toggle('active', type === 'phishing');
+
+      // aggiorna pallini contatore
+      const roundNum = round === 'r1' ? 1 : 2;
+      updateCounterDots(roundNum);
+    }
+
+    function updateCounterDots(roundNum) {
+      const round = 'r' + roundNum;
+      for (let i = 1; i <= 4; i++) {
+        const dot = document.getElementById(`r${roundNum}d${i}`);
+        dot.classList.toggle('done', !!selections[round][i]);
+      }
+    }
+
+    // ============ VERIFICA ROUND ============
+
+    function checkRound(roundNum) {
+      const round = 'r' + roundNum;
+      const data = EMAIL_DATA[round];
+
+      // controlla che tutte e 4 siano classificate
+      for (let i = 1; i <= 4; i++) {
+        if (!selections[round][i]) {
+          SCUDO.showMessage('message' + roundNum, 'error', '❌ Classificate tutte e 4 le email prima di verificare!');
+          return;
+        }
+      }
+
+      let allCorrect = true;
+      const wrongNums = [];
+
+      for (let i = 1; i <= 4; i++) {
+        const card = document.getElementById(`card-${round}-${i}`);
+        const expl = document.getElementById(`expl-${round}-${i}`);
+        const btnSafe  = card.querySelector('.sort-btn-safe');
+        const btnPhish = card.querySelector('.sort-btn-phish');
+        const isCorrect = selections[round][i] === data[i].correct;
+
+        btnSafe.disabled  = true;
+        btnPhish.disabled = true;
+        expl.textContent  = data[i].explanation;
+        expl.classList.add('show');
+
+        if (isCorrect) {
+          card.classList.add('locked-correct');
+          expl.classList.add('expl-correct');
+          locked[round][i] = true;
+        } else {
+          card.classList.add('locked-wrong');
+          expl.classList.add('expl-wrong');
+          allCorrect = false;
+          wrongNums.push(i);
+        }
+      }
+
+      if (allCorrect) {
+        if (roundNum === 1) {
+          SCUDO.showMessage('message1', 'success', '🎉 PERFETTO! Tutte e 4 identificate correttamente. Round 2 sbloccato...');
+          setStepDone(1);
+          setTimeout(() => {
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }, 1800);
+        } else {
+          SCUDO.showMessage('message2', 'success', '🎉 MISSIONE COMPIUTA! Hai smascherato tutte le email di Nyx. Sei un vero esperto di phishing!');
+          setStepDone(2);
+          setTimeout(revealCode, 1400);
+        }
+      } else {
+        const correct = 4 - wrongNums.length;
+        SCUDO.showMessage('message' + roundNum, 'error', `❌ Hai ${correct} su 4 corrette. Leggi le spiegazioni in rosso, poi riprova quelle sbagliate.`);
+        // sblocca solo le email sbagliate dopo 3s
+        setTimeout(() => {
+          wrongNums.forEach(i => {
+            const card = document.getElementById(`card-${round}-${i}`);
+            const expl = document.getElementById(`expl-${round}-${i}`);
+            const btnSafe  = card.querySelector('.sort-btn-safe');
+            const btnPhish = card.querySelector('.sort-btn-phish');
+            card.classList.remove('locked-wrong', 'selected-safe', 'selected-phish');
+            expl.classList.remove('show', 'expl-wrong');
+            expl.textContent = '';
+            btnSafe.classList.remove('active');
+            btnPhish.classList.remove('active');
+            btnSafe.disabled  = false;
+            btnPhish.disabled = false;
+            delete selections[round][i];
+          });
+          updateCounterDots(roundNum);
+          document.getElementById('message' + roundNum).innerHTML = '';
+        }, 3000);
+      }
+    }
+
+    // ============ RIVELAZIONE CODICE ============
+
+    function revealCode() {
+      const code = SCUDO.CODES[3];
+      SCUDO.saveCode(3, code);
+      document.getElementById('codeReveal').innerHTML = `
+        <div class="code-reveal">
+          <div class="label">🎯 TERZO CODICE CASSAFORTE</div>
+          <div class="code">${code}</div>
+          <div class="reminder">📝 Salvato nel REGISTRO CODICI qui sotto: ti servirà alla fine!</div>
+        </div>
+      `;
+      document.getElementById('nextBtn').innerHTML = `
+        <div class="text-center mt-20">
+          <a href="gate-4.html" class="btn btn-success btn-large">PROVA SUCCESSIVA →</a>
+        </div>
+      `;
+      document.getElementById('codesTracker').innerHTML = SCUDO.renderCodesTracker();
+    }
+  </script>
+</body>
+</html>

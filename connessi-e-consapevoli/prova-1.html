@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prova 1 - Crittografia | Agenzia Scudo</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    /* === Step sections === */
+    .step-section {
+      display: none;
+      animation: slideIn 0.4s ease;
+    }
+
+    .step-section.active {
+      display: block;
+    }
+
+    /* === Indicatore step interno alla prova === */
+    .step-progress {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 25px 0 30px;
+    }
+
+    .sp-dot {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-darker);
+      border: 2px solid var(--border-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1em;
+      color: var(--text-dim);
+      transition: all 0.4s ease;
+      flex-shrink: 0;
+    }
+
+    .sp-dot.active {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      box-shadow: 0 0 14px rgba(0, 240, 255, 0.4);
+      animation: pulse 2s infinite;
+    }
+
+    .sp-dot.done {
+      border-color: var(--neon-green);
+      background: rgba(57, 255, 20, 0.12);
+      color: var(--neon-green);
+      box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+      animation: none;
+    }
+
+    .sp-label {
+      font-size: 0.7em;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    .sp-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sp-line {
+      flex: 1;
+      max-width: 60px;
+      height: 2px;
+      background: var(--border-glow);
+      margin-bottom: 18px;
+    }
+
+    /* === Tabella alfabeto === */
+    .alphabet-table {
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid var(--neon-cyan);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 25px 0;
+      overflow-x: auto;
+    }
+
+    .alphabet-table.pink-border {
+      border-color: var(--neon-pink);
+    }
+
+    .alphabet-table.green-border {
+      border-color: var(--neon-green);
+    }
+
+    .alphabet-row {
+      display: grid;
+      grid-template-columns: 110px repeat(26, 1fr);
+      gap: 4px;
+      align-items: center;
+      margin-bottom: 8px;
+      min-width: 700px;
+    }
+
+    .alphabet-label {
+      color: var(--neon-yellow);
+      font-weight: bold;
+      font-size: 0.85em;
+      letter-spacing: 1px;
+    }
+
+    .alphabet-cell {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-darker);
+      border: 1px solid var(--border-glow);
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      font-size: 1em;
+      color: var(--text-light);
+    }
+
+    .alphabet-cell.cipher {
+      background: rgba(255, 46, 154, 0.15);
+      border-color: var(--neon-pink);
+      color: var(--neon-pink);
+    }
+
+    .alphabet-cell.plain {
+      background: rgba(0, 240, 255, 0.15);
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+
+    .alphabet-cell.encode-plain {
+      background: rgba(57, 255, 20, 0.12);
+      border-color: var(--neon-green);
+      color: var(--neon-green);
+    }
+
+    .alphabet-cell.encode-cipher {
+      background: rgba(255, 46, 154, 0.15);
+      border-color: var(--neon-pink);
+      color: var(--neon-pink);
+    }
+
+    /* === Messaggio intercettato === */
+    .cipher-message {
+      background: var(--bg-darker);
+      border: 2px solid var(--neon-yellow);
+      border-radius: 10px;
+      padding: 25px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .cipher-message .label {
+      color: var(--text-dim);
+      font-size: 0.85em;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    .cipher-message .text {
+      font-size: 2.2em;
+      color: var(--neon-yellow);
+      letter-spacing: 8px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      text-shadow: 0 0 15px rgba(255, 240, 60, 0.4);
+    }
+
+    /* === Sezione singolo messaggio === */
+    .word-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border-left: 4px solid var(--neon-pink);
+    }
+
+    .word-section h3 {
+      margin-top: 0;
+    }
+
+    /* === Indizio shift === */
+    .clue-box {
+      background: rgba(255, 240, 60, 0.07);
+      border: 2px dashed var(--neon-yellow);
+      border-radius: 10px;
+      padding: 20px 25px;
+      margin: 20px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    .clue-box .clue-icon {
+      font-size: 2em;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .clue-highlight {
+      display: inline-block;
+      font-size: 1.6em;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      color: var(--neon-cyan);
+      letter-spacing: 5px;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid var(--neon-cyan);
+      border-radius: 6px;
+      padding: 6px 14px;
+      margin: 8px 0;
+    }
+
+    .clue-highlight span {
+      display: inline-block;
+      transition: color 0.2s;
+    }
+
+    .clue-count {
+      display: block;
+      color: var(--neon-pink);
+      font-size: 0.95em;
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    /* === Parola da codificare === */
+    .encode-word-box {
+      background: linear-gradient(135deg, rgba(57, 255, 20, 0.08), rgba(0, 240, 255, 0.08));
+      border: 2px solid var(--neon-green);
+      border-radius: 12px;
+      padding: 25px;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .encode-word-box .encode-label {
+      color: var(--text-dim);
+      font-size: 0.85em;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    .encode-word-box .encode-word {
+      font-size: 2.8em;
+      color: var(--neon-green);
+      letter-spacing: 10px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      text-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+    }
+
+    @media (max-width: 700px) {
+      .cipher-message .text {
+        font-size: 1.4em;
+        letter-spacing: 4px;
+      }
+
+      .encode-word-box .encode-word {
+        font-size: 2em;
+        letter-spacing: 6px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div id="header"></div>
+    <div id="progress"></div>
+
+    <div class="card">
+      <h1>🔐 PROVA 1 — CRITTOGRAFIA</h1>
+
+      <div class="narration">
+        <p>Agenti, abbiamo intercettato i messaggi cifrati di Nyx ai suoi complici!</p>
+        <p>Nyx li ha codificati con il <strong>Cifrario di Cesare</strong>: sposta ogni lettera di un certo numero di
+          posizioni nell'alfabeto.</p>
+        <p>Questa prova è divisa in <strong>tre fasi</strong>. Completatele tutte per ottenere il codice. 🔥</p>
+      </div>
+
+      <!-- Indicatore step interni -->
+      <div class="step-progress">
+        <div class="sp-wrap">
+          <div class="sp-dot active" id="sp1">1</div>
+          <div class="sp-label">DECIFRA</div>
+        </div>
+        <div class="sp-line"></div>
+        <div class="sp-wrap">
+          <div class="sp-dot" id="sp2">2</div>
+          <div class="sp-label">TROVA LO SHIFT</div>
+        </div>
+        <div class="sp-line"></div>
+        <div class="sp-wrap">
+          <div class="sp-dot" id="sp3">3</div>
+          <div class="sp-label">CODIFICA</div>
+        </div>
+      </div>
+
+      <!-- ============ STEP 1: 2 messaggi shift=3 ============ -->
+      <div class="step-section active" id="step1">
+
+        <div class="mission-box">
+          <h3>🎯 FASE 1 — DECIFRA I MESSAGGI (shift = 3)</h3>
+          <p>Per <strong>decifrare</strong> una lettera, torna <strong>indietro di 3 posizioni</strong> nell'alfabeto.
+          </p>
+          <p>Esempio: la lettera <strong style="color: var(--neon-pink);">D</strong> diventa <strong
+              style="color: var(--neon-cyan);">A</strong> (D → C → B → A).</p>
+          <p>Usa la tabella: trova la lettera cifrata nella riga <strong style="color: var(--neon-pink);">ROSA</strong>
+            e leggi sotto, nella riga <strong style="color: var(--neon-cyan);">AZZURRA</strong>, la lettera vera.</p>
+        </div>
+
+        <h3>🔤 TABELLA DI DECIFRAZIONE (shift = 3)</h3>
+        <div class="alphabet-table">
+          <div class="alphabet-row" id="cipherRow1">
+            <div class="alphabet-label">CIFRATO ↓</div>
+          </div>
+          <div class="alphabet-row" id="plainRow1">
+            <div class="alphabet-label">VERO ↓</div>
+          </div>
+        </div>
+
+        <h2 style="text-align: center; margin-top: 30px;">📡 MESSAGGI INTERCETTATI</h2>
+        <p class="text-center" style="color: var(--text-dim);">Decifrate entrambi i messaggi per procedere alla fase 2.
+        </p>
+
+        <div class="word-section">
+          <h3 style="color: var(--neon-pink);">Messaggio 1</h3>
+          <div class="cipher-message">
+            <div class="label">— FRAMMENTO INTERCETTATO —</div>
+            <div class="text">FRGLFH</div>
+          </div>
+          <div class="input-group">
+            <label for="solution1">Inserisci la parola decifrata:</label>
+            <input type="text" id="solution1" placeholder="Scrivi qui..." style="text-transform: uppercase;"
+              autocomplete="off">
+          </div>
+          <div id="result1" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="word-section">
+          <h3 style="color: var(--neon-pink);">Messaggio 2</h3>
+          <div class="cipher-message">
+            <div class="label">— FRAMMENTO INTERCETTATO —</div>
+            <div class="text">DJHQWL VHJUHWL</div>
+          </div>
+          <div class="input-group">
+            <label for="solution2">Inserisci la frase decifrata:</label>
+            <input type="text" id="solution2" placeholder="Scrivi qui..." style="text-transform: uppercase;"
+              autocomplete="off">
+          </div>
+          <div id="result2" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="text-center mt-20">
+          <button class="btn btn-large" onclick="checkStep1()">🔍 VERIFICA ENTRAMBI</button>
+        </div>
+        <div id="message1"></div>
+
+      </div><!-- /step1 -->
+
+
+      <!-- ============ STEP 2: messaggio shift=7 sconosciuto ============ -->
+      <div class="step-section" id="step2">
+
+        <div class="mission-box">
+          <h3>🎯 FASE 2 — LO SHIFT È CAMBIATO!</h3>
+          <p>Abbiamo appena intercettato un <strong>terzo messaggio</strong> di Nyx, ancora più recente.</p>
+          <p>Stavolta ha usato uno shift <strong>diverso</strong> — e non ce l'ha detto. Per fortuna i nostri analisti
+            hanno trovato un indizio...</p>
+        </div>
+
+        <div class="clue-box">
+          <div class="clue-icon">🔎</div>
+          <div>
+            <h4 style="color: var(--neon-yellow); margin-top: 0; margin-bottom: 10px;">INDIZIO INTERCETTATO</h4>
+            <p style="margin-bottom: 8px;">Uno dei complici di Nyx ha scritto: <em>"Usa come shift il numero di lettere
+                della parola AGENZIA."</em></p>
+            <p style="margin-bottom: 6px;">Contate le lettere di questa parola:</p>
+            <div class="clue-highlight" id="agenziaWord">A&nbsp;G&nbsp;E&nbsp;N&nbsp;Z&nbsp;I&nbsp;A</div>
+            <span class="clue-count">Contate le lettere → quel numero è lo shift! 👆</span>
+          </div>
+        </div>
+
+        <h2 style="text-align: center; margin-top: 30px;">📡 TERZO MESSAGGIO INTERCETTATO</h2>
+        <div class="word-section" style="border-left-color: var(--neon-yellow);">
+          <h3 style="color: var(--neon-yellow);">Messaggio 3 (shift diverso!)</h3>
+          <div class="cipher-message">
+            <div class="label">— FRAMMENTO INTERCETTATO —</div>
+            <div class="text">HSSHYTL</div>
+          </div>
+          <div class="input-group">
+            <label for="solution3">Inserisci la parola decifrata:</label>
+            <input type="text" id="solution3" placeholder="Scrivi qui..." style="text-transform: uppercase;"
+              autocomplete="off">
+          </div>
+          <div id="result3" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="text-center mt-20">
+          <button class="btn btn-large" onclick="checkStep2()">🔍 VERIFICA</button>
+        </div>
+        <div id="message2"></div>
+
+      </div><!-- /step2 -->
+
+
+      <!-- ============ STEP 3: codifica SCUDO con shift=3 ============ -->
+      <div class="step-section" id="step3">
+
+        <div class="mission-box">
+          <h3>🎯 FASE 3 — ORA TOCCA A VOI CODIFICARE!</h3>
+          <p>Finora avete <em>decifrato</em> messaggi. Adesso dovete fare il contrario: <strong>codificare</strong> un
+            messaggio da inviare all'Agenzia Scudo come conferma.</p>
+          <p>Usate il <strong>Cifrario di Cesare con shift = 3</strong> e codificate la parola qui sotto. Per codificare
+            si va <strong>avanti</strong> nell'alfabeto (non indietro!).</p>
+          <p>Esempio: la lettera <strong style="color: var(--neon-green);">A</strong> diventa <strong
+              style="color: var(--neon-pink);">D</strong> (A → B → C → D, avanti di 3).</p>
+        </div>
+
+        <h3>🔤 TABELLA DI CODIFICA (shift = 3)</h3>
+        <div class="alphabet-table green-border">
+          <div class="alphabet-row" id="encodeOrigRow">
+            <div class="alphabet-label">VERO ↓</div>
+          </div>
+          <div class="alphabet-row" id="encodeCodedRow">
+            <div class="alphabet-label">CIFRATO ↓</div>
+          </div>
+        </div>
+
+        <h2 style="text-align: center; margin-top: 30px;">✉️ MESSAGGIO DA INVIARE</h2>
+        <p class="text-center" style="color: var(--text-dim);">Codificate questa parola con shift = 3:</p>
+
+        <div class="encode-word-box">
+          <div class="encode-label">— PAROLA DA CODIFICARE —</div>
+          <div class="encode-word">SCUDO</div>
+        </div>
+
+        <div class="word-section" style="border-left-color: var(--neon-green);">
+          <h3 style="color: var(--neon-green);">Inserisci la versione codificata di SCUDO</h3>
+          <p style="color: var(--text-dim); font-size: 0.9em;">Usa la tabella sopra: trova ogni lettera di SCUDO nella
+            riga VERDE e scrivi la lettera corrispondente nella riga ROSA.</p>
+          <div class="input-group">
+            <label for="solution4">SCUDO codificata con shift = 3:</label>
+            <input type="text" id="solution4" placeholder="Scrivi qui..." style="text-transform: uppercase;"
+              autocomplete="off">
+          </div>
+          <div id="result4" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="text-center mt-20">
+          <button class="btn btn-large" onclick="checkStep3()">📤 INVIA IL MESSAGGIO CODIFICATO</button>
+        </div>
+        <div id="message3"></div>
+
+      </div><!-- /step3 -->
+
+      <div id="codeReveal"></div>
+      <div id="nextBtn"></div>
+    </div><!-- /card -->
+
+    <div id="codesTracker"></div>
+  </div>
+
+  <script src="assets/js/scudo.js"></script>
+  <script>
+    SCUDO.guard('prova', 1);
+    document.getElementById('header').innerHTML = SCUDO.renderHeader();
+    document.getElementById('progress').innerHTML = SCUDO.renderProgressBar(1);
+    document.getElementById('codesTracker').innerHTML = SCUDO.renderCodesTracker();
+
+    // ============ GENERAZIONE TABELLE ALFABETO ============
+
+    function buildDecodeTable(rowCipher, rowPlain, shift) {
+      for (let i = 0; i < 26; i++) {
+        const cipherLetter = String.fromCharCode(65 + i);
+        const plainLetter = String.fromCharCode(65 + ((i - shift + 26) % 26));
+
+        const c = document.createElement('div');
+        c.className = 'alphabet-cell cipher';
+        c.textContent = cipherLetter;
+        rowCipher.appendChild(c);
+
+        const p = document.createElement('div');
+        p.className = 'alphabet-cell plain';
+        p.textContent = plainLetter;
+        rowPlain.appendChild(p);
+      }
+    }
+
+    function buildEncodeTable(rowOrig, rowCoded, shift) {
+      for (let i = 0; i < 26; i++) {
+        const plainLetter = String.fromCharCode(65 + i);
+        const cipherLetter = String.fromCharCode(65 + ((i + shift) % 26));
+
+        const o = document.createElement('div');
+        o.className = 'alphabet-cell encode-plain';
+        o.textContent = plainLetter;
+        rowOrig.appendChild(o);
+
+        const e = document.createElement('div');
+        e.className = 'alphabet-cell encode-cipher';
+        e.textContent = cipherLetter;
+        rowCoded.appendChild(e);
+      }
+    }
+
+    // Step 1: decode shift=3
+    buildDecodeTable(
+      document.getElementById('cipherRow1'),
+      document.getElementById('plainRow1'),
+      3
+    );
+    // Step 3: encode shift=3
+    buildEncodeTable(
+      document.getElementById('encodeOrigRow'),
+      document.getElementById('encodeCodedRow'),
+      3
+    );
+
+    // ============ SOLUZIONI ============
+
+    const SOL_1 = 'CODICE';
+    const SOL_2 = 'AGENTI SEGRETI';
+    const SOL_3 = 'ALLARME';
+    const SOL_ENCODE = 'VFXGR';
+
+    function normalize(s) {
+      return s.trim().toUpperCase().replace(/\s+/g, ' ');
+    }
+
+    // ============ STEP 1 ============
+
+    function checkStep1() {
+      const s1 = normalize(document.getElementById('solution1').value);
+      const s2 = normalize(document.getElementById('solution2').value);
+      const ok1 = s1 === SOL_1;
+      const ok2 = s2 === SOL_2;
+
+      document.getElementById('result1').innerHTML = ok1
+        ? '<div class="message success">✅ Messaggio 1 decifrato!</div>'
+        : (s1 ? '<div class="message error">❌ Messaggio 1: non è corretto. Usa la tabella!</div>' : '');
+
+      document.getElementById('result2').innerHTML = ok2
+        ? '<div class="message success">✅ Messaggio 2 decifrato!</div>'
+        : (s2 ? '<div class="message error">❌ Messaggio 2: ricontrolla, attenzione agli spazi!</div>' : '');
+
+      if (!s1 && !s2) {
+        SCUDO.showMessage('message1', 'error', '❌ Inserisci entrambe le soluzioni!');
+        return;
+      }
+
+      if (ok1 && ok2) {
+        SCUDO.showMessage('message1', 'success', '🎉 ENTRAMBI DECIFRATI! Fase 2 sbloccata...');
+        setStepDone(1);
+        setTimeout(() => {
+          document.getElementById('step1').classList.remove('active');
+          document.getElementById('step2').classList.add('active');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 1600);
+      }
+    }
+
+    // ============ STEP 2 ============
+
+    function checkStep2() {
+      const s3 = normalize(document.getElementById('solution3').value);
+
+      if (!s3) {
+        SCUDO.showMessage('message2', 'error', '❌ Inserisci la parola decifrata!');
+        return;
+      }
+
+      document.getElementById('result3').innerHTML = s3 === SOL_3
+        ? '<div class="message success">✅ Decifrato!</div>'
+        : '<div class="message error">❌ Non è corretto. Hai usato lo shift giusto?</div>';
+
+      if (s3 === SOL_3) {
+        SCUDO.showMessage('message2', 'success', '🔓 SHIFT TROVATO! Sei un vero crittografo. Fase 3 sbloccata...');
+        setStepDone(2);
+        setTimeout(() => {
+          document.getElementById('step2').classList.remove('active');
+          document.getElementById('step3').classList.add('active');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 1600);
+      }
+    }
+
+    // ============ STEP 3 ============
+
+    function checkStep3() {
+      const s4 = normalize(document.getElementById('solution4').value).replace(/\s/g, '');
+
+      if (!s4) {
+        SCUDO.showMessage('message3', 'error', '❌ Inserisci la parola codificata!');
+        return;
+      }
+
+      document.getElementById('result4').innerHTML = s4 === SOL_ENCODE
+        ? '<div class="message success">✅ Codifica corretta!</div>'
+        : '<div class="message error">❌ Non è corretto. Ricontrolla lettera per lettera con la tabella!</div>';
+
+      if (s4 === SOL_ENCODE) {
+        SCUDO.showMessage('message3', 'success', '📤 MESSAGGIO INVIATO! Sei ufficialmente un agente crittografo.');
+        setStepDone(3);
+        setTimeout(revealCode, 1200);
+      }
+    }
+
+    // ============ INDICATORE STEP ============
+
+    function setStepDone(num) {
+      const dot = document.getElementById('sp' + num);
+      dot.classList.remove('active');
+      dot.classList.add('done');
+      dot.textContent = '✓';
+      const next = document.getElementById('sp' + (num + 1));
+      if (next) {
+        next.classList.add('active');
+      }
+    }
+
+    // ============ RIVELAZIONE CODICE ============
+
+    function revealCode() {
+      const code = SCUDO.CODES[1];
+      SCUDO.saveCode(1, code);
+      document.getElementById('codeReveal').innerHTML = `
+        <div class="code-reveal">
+          <div class="label">🎯 PRIMO CODICE CASSAFORTE</div>
+          <div class="code">${code}</div>
+          <div class="reminder">📝 Salvato nel REGISTRO CODICI qui sotto: ti servirà alla fine!</div>
+        </div>
+      `;
+      document.getElementById('nextBtn').innerHTML = `
+        <div class="text-center mt-20">
+          <a href="gate-2.html" class="btn btn-success btn-large">PROVA SUCCESSIVA →</a>
+        </div>
+      `;
+      document.getElementById('codesTracker').innerHTML = SCUDO.renderCodesTracker();
+    }
+
+    // Enter su ogni input
+    ['solution1', 'solution2'].forEach(id => {
+      document.getElementById(id).addEventListener('keypress', e => {
+        if (e.key === 'Enter') checkStep1();
+      });
+    });
+    document.getElementById('solution3').addEventListener('keypress', e => {
+      if (e.key === 'Enter') checkStep2();
+    });
+    document.getElementById('solution4').addEventListener('keypress', e => {
+      if (e.key === 'Enter') checkStep3();
+    });
+  </script>
+</body>
+
+</html>

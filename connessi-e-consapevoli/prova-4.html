@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prova 4 - Tracce Digitali | Agenzia Scudo</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .step-section { display: none; animation: slideIn 0.4s ease; }
+    .step-section.active { display: block; }
+
+    /* step progress */
+    .step-progress { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 25px 0 30px; }
+    .sp-dot { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-darker); border: 2px solid var(--border-glow); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1em; color: var(--text-dim); transition: all 0.4s ease; flex-shrink: 0; }
+    .sp-dot.active { border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 14px rgba(0,240,255,0.4); animation: pulse 2s infinite; }
+    .sp-dot.done { border-color: var(--neon-green); background: rgba(57,255,20,0.12); color: var(--neon-green); box-shadow: 0 0 10px rgba(57,255,20,0.3); animation: none; }
+    .sp-label { font-size: 0.7em; letter-spacing: 1px; color: var(--text-dim); text-align: center; margin-top: 4px; }
+    .sp-wrap { display: flex; flex-direction: column; align-items: center; }
+    .sp-line { flex: 1; max-width: 60px; height: 2px; background: var(--border-glow); margin-bottom: 18px; }
+
+    /* immagine intercettata */
+    .intercept-img-wrap {
+      position: relative;
+      margin: 20px 0;
+    }
+    .intercept-img {
+      width: 100%;
+      border-radius: 10px;
+      border: 2px solid var(--neon-cyan);
+      display: block;
+    }
+    .img-stamp {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(0,0,0,0.75);
+      color: var(--neon-pink);
+      font-family: 'Courier New', monospace;
+      font-size: 0.75em;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--neon-pink);
+    }
+    .img-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,240,255,0.08);
+      border: 2px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.9em;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-download:hover { background: rgba(0,240,255,0.18); }
+    .btn-exif {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(57,255,20,0.08);
+      border: 2px solid var(--neon-green);
+      color: var(--neon-green);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.9em;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-exif:hover { background: rgba(57,255,20,0.18); }
+
+    /* pannello EXIF */
+    .exif-panel {
+      display: none;
+      background: #080808;
+      border: 1px solid var(--neon-green);
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.88em;
+      margin: 18px 0;
+      overflow: hidden;
+      animation: slideIn 0.4s ease;
+    }
+    .exif-panel.visible { display: block; }
+    .exif-header {
+      background: rgba(57,255,20,0.1);
+      color: var(--neon-green);
+      padding: 10px 16px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      border-bottom: 1px solid rgba(57,255,20,0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .exif-body { padding: 6px 0; }
+    .exif-row {
+      display: flex;
+      padding: 6px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      gap: 10px;
+    }
+    .exif-key { color: var(--text-dim); width: 150px; flex-shrink: 0; }
+    .exif-val { color: var(--text-light); }
+    .exif-row.gps-row { background: rgba(255,240,60,0.05); }
+    .exif-row.gps-row .exif-key { color: var(--neon-yellow); font-weight: bold; }
+    .exif-row.gps-row .exif-val { color: var(--neon-yellow); font-weight: bold; font-size: 1.05em; }
+    .exif-footer {
+      padding: 8px 16px;
+      color: var(--neon-green);
+      font-size: 0.85em;
+      opacity: 0.7;
+    }
+
+    /* coordinates box (step 2) */
+    .coordinates-box {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(255, 46, 154, 0.1));
+      border: 2px solid var(--neon-cyan);
+      border-radius: 15px;
+      padding: 30px;
+      margin: 25px 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .coordinates-box::before {
+      content: '📍';
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 2em;
+      opacity: 0.3;
+    }
+    .coordinates-box .label {
+      color: var(--text-dim);
+      font-size: 0.85em;
+      letter-spacing: 3px;
+      margin-bottom: 15px;
+    }
+    .coordinates-box .coords {
+      font-size: 1.8em;
+      color: var(--neon-yellow);
+      letter-spacing: 3px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      text-shadow: 0 0 20px rgba(255, 240, 60, 0.5);
+    }
+    .clue-card {
+      background: rgba(255, 240, 60, 0.05);
+      border: 1px dashed var(--neon-yellow);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+    }
+    .clue-card .clue-icon { font-size: 2.5em; flex-shrink: 0; }
+    .clue-card .clue-text { flex: 1; }
+    .clue-card h4 { color: var(--neon-yellow); margin-bottom: 8px; }
+
+    @media (max-width: 600px) {
+      .coordinates-box .coords { font-size: 1.1em; letter-spacing: 1px; }
+      .exif-key { width: 120px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="header"></div>
+    <div id="progress"></div>
+
+    <div class="card">
+      <h1>🗺️ PROVA 4 — TRACCE DIGITALI</h1>
+
+      <div class="narration">
+        <p>Stiamo ricostruendo il passato di Nyx. 🔎</p>
+        <p>Abbiamo trovato una <strong>foto nei suoi file</strong>: mostra un cantiere vicino a un castello. Non sappiamo dove sia, ma le foto scattate con un dispositivo digitale nascondono qualcosa di molto utile...</p>
+        <p>Ogni immagine digitale contiene dati nascosti chiamati <strong>metadati EXIF</strong>: il modello della fotocamera, la data, e spesso le <strong>coordinate GPS</strong> del punto esatto dove è stata scattata.</p>
+        <p>Questa prova ha <strong>due fasi</strong>: prima trovate le coordinate nella foto, poi cercate il posto in Street View.</p>
+      </div>
+
+      <!-- Indicatore step -->
+      <div class="step-progress">
+        <div class="sp-wrap">
+          <div class="sp-dot active" id="sp1">1</div>
+          <div class="sp-label">ANALIZZA</div>
+        </div>
+        <div class="sp-line"></div>
+        <div class="sp-wrap">
+          <div class="sp-dot" id="sp2">2</div>
+          <div class="sp-label">CERCA</div>
+        </div>
+      </div>
+
+      <!-- ============ STEP 1: EXIF ============ -->
+      <div class="step-section active" id="step1">
+
+        <div class="mission-box">
+          <h3>🎯 FASE 1 — ANALIZZA I METADATI DELLA FOTO</h3>
+          <p>Questa foto è stata trovata nei file di Nyx. <strong>Scaricatela</strong> sul vostro dispositivo, poi cliccate <strong>"Analizza metadati EXIF"</strong> per vedere i dati nascosti. Cercate le coordinate GPS: vi diranno dove è stata scattata.</p>
+        </div>
+
+        <div class="intercept-img-wrap">
+          <img src="assets/img/cantiere_nyx.jpg" alt="Foto intercettata dai file di Nyx" class="intercept-img">
+          <div class="img-stamp">⚠ FILE INTERCETTATO — RISERVATO</div>
+        </div>
+
+        <div class="img-actions">
+          <a href="assets/img/cantiere_nyx.jpg" download="cantiere_nyx.jpg" class="btn-download">
+            ⬇️ SCARICA LA FOTO
+          </a>
+          <button class="btn-exif" onclick="showExif()">
+            🔍 ANALIZZA METADATI EXIF
+          </button>
+        </div>
+
+        <!-- Pannello EXIF simulato -->
+        <div class="exif-panel" id="exifPanel">
+          <div class="exif-header">📂 cantiere_nyx.jpg — Metadati EXIF</div>
+          <div class="exif-body">
+            <div class="exif-row"><span class="exif-key">File Name</span><span class="exif-val">cantiere_nyx.jpg</span></div>
+            <div class="exif-row"><span class="exif-key">File Type</span><span class="exif-val">JPEG Image</span></div>
+            <div class="exif-row"><span class="exif-key">Data/Ora</span><span class="exif-val">2011:11:15 09:42:33</span></div>
+            <div class="exif-row"><span class="exif-key">Risoluzione</span><span class="exif-val">1456 x 816 px</span></div>
+            <div class="exif-row"><span class="exif-key">Dispositivo</span><span class="exif-val">Google Street View Camera</span></div>
+            <div class="exif-row"><span class="exif-key">Orientazione</span><span class="exif-val">Orizzontale</span></div>
+            <div class="exif-row"><span class="exif-key">GPS Latitudine</span><span class="exif-val">42°51'59.4"N</span></div>
+            <div class="exif-row"><span class="exif-key">GPS Longitudine</span><span class="exif-val">12°54'54.3"E</span></div>
+            <div class="exif-row"><span class="exif-key">GPS Altitudine</span><span class="exif-val">753 m s.l.m.</span></div>
+          </div>
+          <div class="exif-footer">✔ Analisi completata — 9 campi trovati</div>
+        </div>
+
+        <div id="message1"></div>
+
+        <div class="text-center mt-20" id="nextStep1Btn" style="display:none;">
+          <button class="btn btn-large btn-success" onclick="goToStep2()">📍 HO LE COORDINATE — VAI ALLA FASE 2 →</button>
+        </div>
+
+      </div><!-- /step1 -->
+
+      <!-- ============ STEP 2: STREET VIEW (invariato) ============ -->
+      <div class="step-section" id="step2">
+
+        <div class="coordinates-box">
+          <div class="label">— COORDINATE GPS —</div>
+          <div class="coords" style="font-size:1.1em; letter-spacing:1px; color: var(--neon-cyan);">Usa le coordinate GPS<br>che hai trovato nei metadati EXIF della foto</div>
+        </div>
+
+        <div class="clue-card">
+          <div class="clue-icon">🚚</div>
+          <div class="clue-text">
+            <h4>INDIZIO DAGLI INFORMATORI</h4>
+            <p style="margin-bottom: 0;">In zona è stato avvistato <strong>un camion con scritto il nome della ditta</strong>. Cerca segni di lavori in corso, cantieri, mezzi parcheggiati o cartelli. Il camion potrebbe essere in qualsiasi punto vicino al castello.</p>
+          </div>
+        </div>
+
+        <div class="mission-box">
+          <h3>🎯 LA TUA MISSIONE</h3>
+          <ol style="margin-top: 10px;">
+            <li><strong>Apri Google Maps</strong> sul tuo dispositivo (browser o app)</li>
+            <li><strong>Copia e incolla le coordinate</strong> qui sopra nella barra di ricerca</li>
+            <li><strong>Entra in Street View</strong>: trascina l'omino giallo sulla strada</li>
+            <li><strong>Torna al 2011</strong>: clicca l'icona dell'orologio 🕐 e seleziona le foto storiche</li>
+            <li><strong>Cerca il camion</strong> con il nome della ditta scritto sopra</li>
+            <li>Quando l'hai trovato, scrivi qui sotto il nome della ditta</li>
+          </ol>
+        </div>
+
+        <div class="tip-box">
+          <h4>💡 Suggerimenti da detective</h4>
+          <ul style="margin-top: 8px; margin-bottom: 0;">
+            <li>Su computer: cerca le coordinate su Google Maps, poi clicca sull'<strong>omino giallo</strong> in basso a destra e trascinalo sulla strada</li>
+            <li>Su telefono: apri l'<strong>app Google Maps</strong>, incolla le coordinate, poi tocca il riquadro Street View che appare in basso</li>
+            <li>Il nome della ditta è composto da <strong>due cognomi</strong></li>
+            <li>Guarda bene <strong>tutti i lati</strong> del camion girando in Street View</li>
+          </ul>
+        </div>
+
+        <div class="tip-box" style="border-color: var(--neon-pink); background: rgba(255,46,154,0.05);">
+          <h4 style="color: var(--neon-pink);">📸 ATTENZIONE — Usa le foto del 2011!</h4>
+          <p style="margin-bottom: 8px;">Il camion non è visibile nelle foto recenti — la ditta era in zona <strong>nel 2011</strong>. Street View conserva le foto storiche.</p>
+          <ul style="margin-top: 0; margin-bottom: 0;">
+            <li>Su computer: una volta in Street View, cercate l'<strong>icona dell'orologio</strong> 🕐 in alto a sinistra e usate la barra del tempo per tornare al <strong>2011</strong></li>
+            <li>Su telefono: toccate la freccia in alto a sinistra per aprire il pannello delle foto storiche</li>
+          </ul>
+        </div>
+
+        <div class="mission-box" style="margin-top: 30px;">
+          <h3>✅ INSERISCI IL NOME DELLA DITTA</h3>
+          <div class="input-group">
+            <input type="text" id="solution" placeholder="Es: Rossi Bianchi" style="text-transform: uppercase;" autocomplete="off">
+          </div>
+          <button class="btn" onclick="checkSolution()">VERIFICA</button>
+        </div>
+
+        <div id="message"></div>
+        <div id="codeReveal"></div>
+        <div id="nextBtn"></div>
+
+        <div class="tip-box" style="margin-top: 30px; background: rgba(255, 46, 154, 0.05); border-color: var(--neon-pink);">
+          <h4 style="color: var(--neon-pink);">🛡️ DEBRIEF — Cosa abbiamo imparato</h4>
+          <p style="margin-bottom: 0;">Questa tecnica si chiama <strong>OSINT</strong> (Open Source Intelligence): cercare informazioni nascoste tra dati pubblici. I metadati EXIF nelle foto, le vecchie immagini di Street View, i post sui social — tutto quello che pubblichiamo online può raccontare la nostra storia. Per questo è importante <strong>fare attenzione a cosa condividiamo</strong> in rete!</p>
+        </div>
+
+      </div><!-- /step2 -->
+
+    </div><!-- /card -->
+
+    <div id="codesTracker"></div>
+  </div>
+
+  <script src="assets/js/scudo.js"></script>
+  <script>
+    SCUDO.guard('prova', 4);
+    document.getElementById('header').innerHTML = SCUDO.renderHeader();
+    document.getElementById('progress').innerHTML = SCUDO.renderProgressBar(4);
+    document.getElementById('codesTracker').innerHTML = SCUDO.renderCodesTracker();
+
+    // ============ STEP INDICATOR ============
+
+    function setStepDone(num) {
+      const dot = document.getElementById('sp' + num);
+      dot.classList.remove('active');
+      dot.classList.add('done');
+      dot.textContent = '✓';
+      const next = document.getElementById('sp' + (num + 1));
+      if (next) next.classList.add('active');
+    }
+
+    // ============ STEP 1: EXIF ============
+
+    function showExif() {
+      const panel = document.getElementById('exifPanel');
+      panel.classList.add('visible');
+      panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => {
+        SCUDO.showMessage('message1', 'success', '✅ Metadati trovati! Cercate le righe GPS Latitudine e Longitudine evidenziate in giallo.');
+        document.getElementById('nextStep1Btn').style.display = 'block';
+      }, 600);
+    }
+
+    function goToStep2() {
+      setStepDone(1);
+      document.getElementById('step1').classList.remove('active');
+      document.getElementById('step2').classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ============ STEP 2: SOLUZIONE ============
+
+    function normalize(s) {
+      return s.trim().toUpperCase()
+        .replace(/[\s\-_,.]+/g, ' ')
+        .replace(/\s+/g, ' ');
+    }
+
+    function checkSolution() {
+      const sol = normalize(document.getElementById('solution').value);
+      const correct = normalize(SCUDO.SOLUTIONS[4]);
+      const swapped = correct.split(' ').reverse().join(' ');
+
+      if (sol === correct || sol === swapped) {
+        SCUDO.showMessage('message', 'success', '✅ TROVATO! Sei un vero detective digitale.');
+        revealCode();
+      } else if (sol) {
+        SCUDO.showMessage('message', 'error', '❌ Non è la ditta giusta. Continua a cercare il camion in Street View!');
+      } else {
+        SCUDO.showMessage('message', 'error', '❌ Inserisci il nome della ditta!');
+      }
+    }
+
+    function revealCode() {
+      const code = SCUDO.CODES[4];
+      SCUDO.saveCode(4, code);
+      document.getElementById('codeReveal').innerHTML = `
+        <div class="code-reveal">
+          <div class="label">🎯 QUARTO CODICE CASSAFORTE</div>
+          <div class="code">${code}</div>
+          <div class="reminder">📝 Salvato nel REGISTRO CODICI qui sotto: ti servirà alla fine!</div>
+        </div>
+      `;
+      document.getElementById('nextBtn').innerHTML = `
+        <div class="text-center mt-20">
+          <a href="gate-5.html" class="btn btn-success btn-large">ULTIMA PROVA →</a>
+        </div>
+      `;
+      document.getElementById('codesTracker').innerHTML = SCUDO.renderCodesTracker();
+    }
+
+    document.getElementById('solution').addEventListener('keypress', e => {
+      if (e.key === 'Enter') checkSolution();
+    });
+  </script>
+</body>
+</html>

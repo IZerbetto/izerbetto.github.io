@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prova 2 - Password | Agenzia Scudo</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .step-section { display: none; animation: slideIn 0.4s ease; }
+    .step-section.active { display: block; }
+
+    /* step progress */
+    .step-progress { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 25px 0 30px; }
+    .sp-dot { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-darker); border: 2px solid var(--border-glow); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1em; color: var(--text-dim); transition: all 0.4s ease; flex-shrink: 0; }
+    .sp-dot.active { border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 14px rgba(0,240,255,0.4); animation: pulse 2s infinite; }
+    .sp-dot.done { border-color: var(--neon-green); background: rgba(57,255,20,0.12); color: var(--neon-green); box-shadow: 0 0 10px rgba(57,255,20,0.3); animation: none; }
+    .sp-label { font-size: 0.7em; letter-spacing: 1px; color: var(--text-dim); text-align: center; margin-top: 4px; }
+    .sp-wrap { display: flex; flex-direction: column; align-items: center; }
+    .sp-line { flex: 1; max-width: 60px; height: 2px; background: var(--border-glow); margin-bottom: 18px; }
+
+    /* quiz */
+    .quiz-question { margin-bottom: 25px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 10px; border-left: 4px solid var(--neon-cyan); }
+    .quiz-question h4 { color: var(--neon-cyan); margin-top: 0; margin-bottom: 14px; font-size: 1em; line-height: 1.5; }
+    .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+    .quiz-option { background: var(--bg-darker); border: 2px solid var(--border-glow); border-radius: 8px; padding: 12px 16px; cursor: pointer; color: var(--text-light); transition: all 0.2s; font-size: 0.95em; text-align: left; line-height: 1.5; }
+    .quiz-option:hover:not(.disabled) { border-color: var(--neon-cyan); background: rgba(0,240,255,0.08); }
+    .quiz-option.selected { border-color: var(--neon-yellow); background: rgba(255,240,60,0.1); color: var(--neon-yellow); }
+    .quiz-option.correct { border-color: var(--neon-green); background: rgba(57,255,20,0.12); color: var(--neon-green); }
+    .quiz-option.wrong { border-color: var(--danger); background: rgba(255,40,40,0.12); color: var(--danger); }
+    .quiz-option.disabled { pointer-events: none; }
+    .pwd-sample { display: inline-block; font-family: 'Courier New', monospace; font-size: 1.4em; color: var(--neon-pink); background: rgba(255,46,154,0.1); border: 1px solid var(--neon-pink); border-radius: 6px; padding: 5px 14px; margin: 8px 0; letter-spacing: 3px; }
+    code { font-family: 'Courier New', monospace; color: var(--neon-pink); background: rgba(255,46,154,0.1); border-radius: 4px; padding: 1px 5px; }
+
+    /* ranking */
+    .ranking-area { display: grid; grid-template-columns: 1fr; gap: 9px; margin: 18px 0; }
+    .pwd-card { background: linear-gradient(135deg, rgba(0,240,255,0.07), rgba(255,46,154,0.07)); border: 2px solid var(--neon-cyan); border-radius: 10px; padding: 11px 14px; display: flex; align-items: center; gap: 12px; transition: all 0.2s; user-select: none; }
+    .pwd-card:hover { transform: translateX(4px); box-shadow: 0 3px 14px rgba(0,240,255,0.22); }
+    .pwd-rank { width: 40px; height: 40px; flex-shrink: 0; background: var(--bg-darker); border: 2px solid var(--neon-pink); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1em; font-weight: bold; color: var(--neon-pink); }
+    .pwd-text { flex: 1; font-family: 'Courier New', monospace; font-size: 1em; color: var(--neon-yellow); letter-spacing: 1px; word-break: break-all; }
+    .move-buttons { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+    .move-btn { background: var(--bg-darker); border: 1px solid var(--border-glow); color: var(--neon-cyan); width: 30px; height: 26px; border-radius: 4px; cursor: pointer; font-size: 1.1em; line-height: 1; padding: 0; }
+    .move-btn:hover { background: rgba(0,240,255,0.1); }
+    .move-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .ranking-legend { display: flex; justify-content: space-between; margin: 12px 0 6px; color: var(--text-dim); font-size: 0.85em; letter-spacing: 1px; text-transform: uppercase; }
+    .ranking-legend .top { color: var(--neon-green); }
+    .ranking-legend .bot { color: var(--danger); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="header"></div>
+    <div id="progress"></div>
+
+    <div class="card">
+      <h1>🔑 PROVA 2 — PASSWORD</h1>
+
+      <div class="narration">
+        <p>Ottimo lavoro con i messaggi cifrati! 🎉</p>
+        <p>Ora dobbiamo capire <strong>come Nyx riesce a entrare</strong> negli account delle sue vittime.</p>
+        <p>Il segreto è uno solo: le <strong>password deboli</strong>. Questa prova ha <strong>tre fasi</strong>: prima create una password super-sicura, poi analizzate una password rubata da Nyx, infine ordinate 7 password per livello di sicurezza.</p>
+      </div>
+
+      <!-- Indicatore step -->
+      <div class="step-progress">
+        <div class="sp-wrap">
+          <div class="sp-dot active" id="sp1">1</div>
+          <div class="sp-label">CREA</div>
+        </div>
+        <div class="sp-line"></div>
+        <div class="sp-wrap">
+          <div class="sp-dot" id="sp2">2</div>
+          <div class="sp-label">ANALIZZA</div>
+        </div>
+        <div class="sp-line"></div>
+        <div class="sp-wrap">
+          <div class="sp-dot" id="sp3">3</div>
+          <div class="sp-label">ORDINA</div>
+        </div>
+      </div>
+
+      <!-- ============ STEP 1: CREA PASSWORD ============ -->
+      <div class="step-section active" id="step1">
+        <div class="mission-box">
+          <h3>🎯 FASE 1 — CREA UNA PASSWORD SUPER-SICURA</h3>
+          <p>Crea una password che rispetti <strong>TUTTE</strong> queste regole:</p>
+          <ul>
+            <li>Almeno <strong>16 caratteri</strong></li>
+            <li>Almeno <strong>2 lettere MAIUSCOLE</strong> (A-Z)</li>
+            <li>Almeno <strong>2 lettere minuscole</strong> (a-z)</li>
+            <li>Almeno <strong>2 numeri</strong> (0-9)</li>
+            <li>Almeno <strong>2 simboli</strong> (! @ # $ % &amp; * ecc.)</li>
+          </ul>
+        </div>
+
+        <div class="tool-box">
+          <div class="input-group">
+            <label for="password">CREA LA TUA PASSWORD</label>
+            <input type="text" id="password" placeholder="La tua password..." autocomplete="off">
+          </div>
+
+          <div class="strength-meter">
+            <div class="strength-fill" id="strengthFill"></div>
+          </div>
+
+          <div class="password-checks" id="checks">
+            <div class="check-item" data-check="length">⬜ Almeno 16 caratteri (0 finora)</div>
+            <div class="check-item" data-check="upper">⬜ Almeno 2 MAIUSCOLE (0 finora)</div>
+            <div class="check-item" data-check="lower">⬜ Almeno 2 minuscole (0 finora)</div>
+            <div class="check-item" data-check="number">⬜ Almeno 2 numeri (0 finora)</div>
+            <div class="check-item" data-check="symbol">⬜ Almeno 2 simboli (0 finora)</div>
+          </div>
+
+          <div class="text-center mt-20">
+            <button class="btn" onclick="verifyPassword()">VERIFICA E VAI ALLA FASE 2 →</button>
+          </div>
+        </div>
+
+        <div id="message1"></div>
+      </div>
+
+      <!-- ============ STEP 2: ANALIZZA PASSWORD ============ -->
+      <div class="step-section" id="step2">
+        <div class="mission-box">
+          <h3>🎯 FASE 2 — ANALIZZA UNA PASSWORD RUBATA</h3>
+          <p>Nyx ha rubato questa password dall'account di una delle sue vittime:</p>
+          <div style="text-align: center; margin: 20px 0;">
+            <span class="pwd-sample">Nonna2026!</span>
+          </div>
+          <p>Rispondete a tutte e 4 le domande per dimostrare che capite i punti deboli di questa password. Se sbagliate, le risposte corrette vengono evidenziate in verde — poi potete riprovare.</p>
+        </div>
+
+        <div id="quizContainer">
+          <div class="quiz-question" id="q1">
+            <h4>❓ Domanda 1 — Quanti caratteri ha la password <code>Nonna2026!</code>?</h4>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="selectOption(1,'A')">A) &nbsp;6 caratteri</button>
+              <button class="quiz-option" onclick="selectOption(1,'B')">B) &nbsp;8 caratteri</button>
+              <button class="quiz-option" onclick="selectOption(1,'C')">C) 10 caratteri</button>
+            </div>
+          </div>
+
+          <div class="quiz-question" id="q2">
+            <h4>❓ Domanda 2 — Perché usare la parola <code>Nonna</code> è un problema?</h4>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="selectOption(2,'A')">A) Perché le password non possono avere la lettera maiuscola iniziale</button>
+              <button class="quiz-option" onclick="selectOption(2,'B')">B) Perché gli hacker usano dizionari di parole comuni per indovinare le password</button>
+              <button class="quiz-option" onclick="selectOption(2,'C')">C) Perché "Nonna" è una parola troppo lunga per una password</button>
+            </div>
+          </div>
+
+          <div class="quiz-question" id="q3">
+            <h4>❓ Domanda 3 — Perché <code>2026</code> rende la password meno sicura?</h4>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="selectOption(3,'A')">A) Perché le password non possono contenere numeri</button>
+              <button class="quiz-option" onclick="selectOption(3,'B')">B) Perché 2026 è un numero pari e si vede subito</button>
+              <button class="quiz-option" onclick="selectOption(3,'C')">C) Perché è l'anno corrente — gli hacker provano sempre gli anni recenti come prima cosa</button>
+            </div>
+          </div>
+
+          <div class="quiz-question" id="q4">
+            <h4>❓ Domanda 4 — Come si potrebbe rendere <code>Nonna2026!</code> molto più sicura?</h4>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="selectOption(4,'A')">A) Aggiungere un secondo punto esclamativo → <code>Nonna2026!!</code></button>
+              <button class="quiz-option" onclick="selectOption(4,'B')">B) Allungarla e usare caratteri casuali invece di parole → tipo <code>N0nn@!7x#Kq2m9R</code></button>
+              <button class="quiz-option" onclick="selectOption(4,'C')">C) Scrivere tutto in minuscolo → <code>nonna2026!</code></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-20">
+          <button class="btn btn-large" onclick="checkQuiz()">🔍 VERIFICA RISPOSTE</button>
+        </div>
+        <div id="message2"></div>
+      </div>
+
+      <!-- ============ STEP 3: ORDINA 7 PASSWORD ============ -->
+      <div class="step-section" id="step3">
+        <div class="mission-box">
+          <h3>🎯 FASE 3 — ORDINA LE PASSWORD DI NYX</h3>
+          <p>Nyx ha rubato queste <strong>7 password</strong> dai suoi bersagli. Riordinatele dalla <strong>più sicura in cima</strong> alla <strong>più debole in fondo</strong>.</p>
+          <p>Usate le frecce ⬆️⬇️ per spostare le carte. Pensate a: <strong>lunghezza</strong>, <strong>varietà di caratteri</strong>, <strong>prevedibilità</strong>.</p>
+        </div>
+
+        <div class="ranking-legend">
+          <span class="top">⬆️ PIÙ SICURA</span>
+          <span class="bot">PIÙ DEBOLE ⬇️</span>
+        </div>
+
+        <div class="ranking-area" id="rankingArea"></div>
+
+        <div class="text-center mt-20">
+          <button class="btn btn-large" onclick="checkRanking()">🔍 VERIFICA L'ORDINE</button>
+        </div>
+        <div id="message3"></div>
+      </div>
+
+      <div id="codeReveal"></div>
+      <div id="nextBtn"></div>
+    </div>
+
+    <div id="codesTracker"></div>
+  </div>
+
+  <script src="assets/js/scudo.js"></script>
+  <script>
+    SCUDO.guard('prova', 2);
+    document.getElementById('header').innerHTML = SCUDO.renderHeader();
+    document.getElementById('progress').innerHTML = SCUDO.renderProgressBar(2);
+    document.getElementById('codesTracker').innerHTML = SCUDO.renderCodesTracker();
+
+    // ============ STEP INDICATOR ============
+
+    function setStepDone(num) {
+      const dot = document.getElementById('sp' + num);
+      dot.classList.remove('active');
+      dot.classList.add('done');
+      dot.textContent = '✓';
+      const next = document.getElementById('sp' + (num + 1));
+      if (next) next.classList.add('active');
+    }
+
+    // ============ STEP 1: PASSWORD ============
+
+    const passwordInput = document.getElementById('password');
+
+    function analyzePassword(pwd) {
+      return {
+        length:  pwd.length >= 16,
+        upper:   (pwd.match(/[A-Z]/g) || []).length >= 2,
+        lower:   (pwd.match(/[a-z]/g) || []).length >= 2,
+        number:  (pwd.match(/[0-9]/g) || []).length >= 2,
+        symbol:  (pwd.match(/[^A-Za-z0-9]/g) || []).length >= 2,
+        len:     pwd.length,
+        nUpper:  (pwd.match(/[A-Z]/g) || []).length,
+        nLower:  (pwd.match(/[a-z]/g) || []).length,
+        nNum:    (pwd.match(/[0-9]/g) || []).length,
+        nSym:    (pwd.match(/[^A-Za-z0-9]/g) || []).length
+      };
+    }
+
+    function updateChecks() {
+      const r = analyzePassword(passwordInput.value);
+      const items = [
+        { key: 'length', ok: r.length, text: `Almeno 16 caratteri (${r.len} finora)` },
+        { key: 'upper',  ok: r.upper,  text: `Almeno 2 MAIUSCOLE (${r.nUpper} finora)` },
+        { key: 'lower',  ok: r.lower,  text: `Almeno 2 minuscole (${r.nLower} finora)` },
+        { key: 'number', ok: r.number, text: `Almeno 2 numeri (${r.nNum} finora)` },
+        { key: 'symbol', ok: r.symbol, text: `Almeno 2 simboli (${r.nSym} finora)` }
+      ];
+      let validCount = 0;
+      items.forEach(({ key, ok, text }) => {
+        const el = document.querySelector(`[data-check="${key}"]`);
+        el.textContent = (ok ? '✅' : '⬜') + ' ' + text;
+        el.classList.toggle('valid', ok);
+        if (ok) validCount++;
+      });
+      const fill = document.getElementById('strengthFill');
+      const pct = (validCount / 5) * 100;
+      fill.style.width = pct + '%';
+      fill.style.background = pct === 100 ? 'var(--neon-green)' : pct >= 60 ? 'var(--neon-yellow)' : 'var(--danger)';
+    }
+
+    passwordInput.addEventListener('input', updateChecks);
+    passwordInput.addEventListener('keypress', e => { if (e.key === 'Enter') verifyPassword(); });
+
+    function verifyPassword() {
+      const r = analyzePassword(passwordInput.value);
+      if (r.length && r.upper && r.lower && r.number && r.symbol) {
+        SCUDO.showMessage('message1', 'success', '✅ PASSWORD SUPER-SICURA! Fase 2 sbloccata...');
+        setStepDone(1);
+        setTimeout(() => {
+          document.getElementById('step1').classList.remove('active');
+          document.getElementById('step2').classList.add('active');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 1500);
+      } else {
+        const missing = [];
+        if (!r.length) missing.push(`almeno 16 caratteri (ne hai ${r.len})`);
+        if (!r.upper)  missing.push(`almeno 2 MAIUSCOLE (ne hai ${r.nUpper})`);
+        if (!r.lower)  missing.push(`almeno 2 minuscole (ne hai ${r.nLower})`);
+        if (!r.number) missing.push(`almeno 2 numeri (ne hai ${r.nNum})`);
+        if (!r.symbol) missing.push(`almeno 2 simboli (ne hai ${r.nSym})`);
+        SCUDO.showMessage('message1', 'error', '❌ Manca: ' + missing.join(' • '));
+      }
+    }
+
+    // ============ STEP 2: QUIZ ============
+
+    const CORRECT_ANSWERS = { 1: 'C', 2: 'B', 3: 'C', 4: 'B' };
+    const selectedAnswers = {};
+
+    function selectOption(qNum, option) {
+      const qEl = document.getElementById('q' + qNum);
+      qEl.querySelectorAll('.quiz-option').forEach(btn => btn.classList.remove('selected'));
+      const idx = ['A', 'B', 'C'].indexOf(option);
+      if (idx >= 0) qEl.querySelectorAll('.quiz-option')[idx].classList.add('selected');
+      selectedAnswers[qNum] = option;
+    }
+
+    function checkQuiz() {
+      for (let i = 1; i <= 4; i++) {
+        if (!selectedAnswers[i]) {
+          SCUDO.showMessage('message2', 'error', '❌ Rispondete a tutte e 4 le domande prima di verificare!');
+          return;
+        }
+      }
+
+      let allCorrect = true;
+      const wrongNums = [];
+
+      for (let i = 1; i <= 4; i++) {
+        const qEl = document.getElementById('q' + i);
+        const opts = qEl.querySelectorAll('.quiz-option');
+        const corrIdx = ['A', 'B', 'C'].indexOf(CORRECT_ANSWERS[i]);
+        const selIdx  = ['A', 'B', 'C'].indexOf(selectedAnswers[i]);
+
+        opts.forEach(btn => btn.classList.add('disabled'));
+
+        if (selectedAnswers[i] === CORRECT_ANSWERS[i]) {
+          opts[selIdx].classList.remove('selected');
+          opts[selIdx].classList.add('correct');
+        } else {
+          opts[selIdx].classList.remove('selected');
+          opts[selIdx].classList.add('wrong');
+          opts[corrIdx].classList.add('correct');
+          allCorrect = false;
+          wrongNums.push(i);
+        }
+      }
+
+      if (allCorrect) {
+        SCUDO.showMessage('message2', 'success', '🎉 TUTTE CORRETTE! Siete esperti di sicurezza. Fase 3 sbloccata...');
+        setStepDone(2);
+        setTimeout(() => {
+          document.getElementById('step2').classList.remove('active');
+          document.getElementById('step3').classList.add('active');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 1800);
+      } else {
+        SCUDO.showMessage('message2', 'error', `❌ Alcune risposte non sono corrette. Le risposte giuste sono evidenziate in verde. Riprovate tra poco!`);
+        setTimeout(() => {
+          wrongNums.forEach(i => {
+            const qEl = document.getElementById('q' + i);
+            qEl.querySelectorAll('.quiz-option').forEach(btn => {
+              btn.classList.remove('disabled', 'correct', 'wrong', 'selected');
+            });
+            delete selectedAnswers[i];
+          });
+          document.getElementById('message2').innerHTML = '';
+        }, 3000);
+      }
+    }
+
+    // ============ STEP 3: RANKING ============
+
+    const CORRECT_ORDER = [
+      'X@7kPm#2vLq!9nRw',   // 1. casuale, 16 char, 2+ di ogni tipo
+      'Stella!2026Mare@9',   // 2. parole + 2 simboli + numeri, 17 char
+      'Matteo2001!',         // 3. nome + anno + simbolo, 11 char
+      'Cane2026!',           // 4. parola comune + anno + simbolo, 9 char
+      'qwerty99',            // 5. sequenza tastiera + numeri, no simboli
+      '123456',              // 6. numeri sequenziali, 6 char
+      'ciao'                 // 7. parola banale, 4 char
+    ];
+
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    let currentOrder = shuffleArray(CORRECT_ORDER);
+    while (JSON.stringify(currentOrder) === JSON.stringify(CORRECT_ORDER)) {
+      currentOrder = shuffleArray(CORRECT_ORDER);
+    }
+
+    function renderRanking() {
+      const area = document.getElementById('rankingArea');
+      area.innerHTML = '';
+      currentOrder.forEach((pwd, idx) => {
+        const card = document.createElement('div');
+        card.className = 'pwd-card';
+        card.innerHTML = `
+          <div class="pwd-rank">${idx + 1}</div>
+          <div class="pwd-text">${pwd}</div>
+          <div class="move-buttons">
+            <button class="move-btn" onclick="moveCard(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>⬆</button>
+            <button class="move-btn" onclick="moveCard(${idx}, 1)" ${idx === currentOrder.length - 1 ? 'disabled' : ''}>⬇</button>
+          </div>
+        `;
+        area.appendChild(card);
+      });
+    }
+
+    function moveCard(index, direction) {
+      const newIndex = index + direction;
+      if (newIndex < 0 || newIndex >= currentOrder.length) return;
+      [currentOrder[index], currentOrder[newIndex]] = [currentOrder[newIndex], currentOrder[index]];
+      renderRanking();
+    }
+
+    function checkRanking() {
+      const isCorrect = currentOrder.every((pwd, idx) => pwd === CORRECT_ORDER[idx]);
+      if (isCorrect) {
+        SCUDO.showMessage('message3', 'success', '🎉 ORDINE PERFETTO! Ora sapete riconoscere una password sicura da una debole.');
+        setStepDone(3);
+        setTimeout(revealCode, 1200);
+      } else {
+        const correct = currentOrder.filter((pwd, idx) => pwd === CORRECT_ORDER[idx]).length;
+        SCUDO.showMessage('message3', 'error', `❌ Non ancora! Avete ${correct} su 7 nella posizione giusta. Pensate a: lunghezza, varietà di caratteri, prevedibilità.`);
+      }
+    }
+
+    function revealCode() {
+      const code = SCUDO.CODES[2];
+      SCUDO.saveCode(2, code);
+      document.getElementById('codeReveal').innerHTML = `
+        <div class="code-reveal">
+          <div class="label">🎯 SECONDO CODICE CASSAFORTE</div>
+          <div class="code">${code}</div>
+          <div class="reminder">📝 Salvato nel REGISTRO CODICI qui sotto: ti servirà alla fine!</div>
+        </div>
+      `;
+      document.getElementById('nextBtn').innerHTML = `
+        <div class="text-center mt-20">
+          <a href="gate-3.html" class="btn btn-success btn-large">PROVA SUCCESSIVA →</a>
+        </div>
+      `;
+      document.getElementById('codesTracker').innerHTML = SCUDO.renderCodesTracker();
+    }
+
+    renderRanking();
+  </script>
+</body>
+</html>

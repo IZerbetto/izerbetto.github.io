@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prova 5 - Steganografia | Agenzia Scudo</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .step-section { display: none; animation: slideIn 0.4s ease; }
+    .step-section.active { display: block; }
+
+    /* step progress */
+    .step-progress { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 25px 0 30px; }
+    .sp-dot { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-darker); border: 2px solid var(--border-glow); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1em; color: var(--text-dim); transition: all 0.4s ease; flex-shrink: 0; }
+    .sp-dot.active { border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 14px rgba(0,240,255,0.4); animation: pulse 2s infinite; }
+    .sp-dot.done { border-color: var(--neon-green); background: rgba(57,255,20,0.12); color: var(--neon-green); box-shadow: 0 0 10px rgba(57,255,20,0.3); animation: none; }
+    .sp-label { font-size: 0.7em; letter-spacing: 1px; color: var(--text-dim); text-align: center; margin-top: 4px; }
+    .sp-wrap { display: flex; flex-direction: column; align-items: center; }
+    .sp-line { flex: 1; max-width: 60px; height: 2px; background: var(--border-glow); margin-bottom: 18px; }
+
+    /* messaggio intercettato */
+    .intercept-msg {
+      background: #050a05;
+      border: 2px solid var(--neon-green);
+      border-radius: 10px;
+      padding: 28px 32px;
+      font-family: 'Courier New', monospace;
+      font-size: 1em;
+      line-height: 2;
+      color: #a8e8a8;
+      margin: 20px 0;
+      position: relative;
+    }
+    .intercept-msg::before {
+      content: '▶ TRASMISSIONE INTERCETTATA';
+      position: absolute;
+      top: -12px;
+      left: 16px;
+      background: #050a05;
+      color: var(--neon-green);
+      font-size: 0.75em;
+      letter-spacing: 2px;
+      padding: 0 8px;
+    }
+    .intercept-msg p { margin: 0 0 8px; }
+    .intercept-msg p:last-child { margin-bottom: 0; }
+
+    /* stego step 2 */
+    .stego-workspace {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 20px;
+      margin: 25px 0;
+      align-items: start;
+    }
+    .stego-image-wrapper {
+      background: var(--bg-darker);
+      border: 2px solid var(--border-glow);
+      border-radius: 12px;
+      padding: 10px;
+      overflow: hidden;
+    }
+    .stego-image-wrapper img {
+      width: 100%;
+      display: block;
+      border-radius: 8px;
+      transition: filter 0.1s;
+    }
+    .stego-controls {
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid var(--neon-cyan);
+      border-radius: 12px;
+      padding: 20px;
+      position: sticky;
+      top: 20px;
+    }
+    .stego-controls h3 {
+      color: var(--neon-cyan);
+      margin-top: 0;
+      text-align: center;
+      font-size: 1em;
+      letter-spacing: 2px;
+    }
+    .control-group { margin-bottom: 18px; }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      color: var(--neon-cyan);
+      font-size: 0.8em;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .control-group label span { color: var(--neon-yellow); }
+    .control-group input[type="range"] { width: 100%; accent-color: var(--neon-cyan); }
+    .reset-btn {
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      border: 2px solid var(--neon-pink);
+      color: var(--neon-pink);
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      cursor: pointer;
+      font-weight: bold;
+      letter-spacing: 1px;
+      transition: all 0.2s;
+    }
+    .reset-btn:hover { background: rgba(255,46,154,0.1); }
+
+    @media (max-width: 800px) {
+      .stego-workspace { grid-template-columns: 1fr; }
+      .stego-controls { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="header"></div>
+    <div id="progress"></div>
+
+    <div class="card">
+      <h1>🖼️ PROVA 5 — STEGANOGRAFIA</h1>
+
+      <div class="narration">
+        <p>Ultima prova, agenti! 🔥</p>
+        <p>La <strong>steganografia</strong> è l'arte di nascondere un messaggio dentro un altro messaggio. Nyx la usa da anni per comunicare con i suoi complici senza essere scoperto.</p>
+        <p>Questa prova ha <strong>due fasi</strong>: prima decifrare un testo intercettato, poi rivelare un'immagine apparentemente innocua.</p>
+      </div>
+
+      <!-- Indicatore step -->
+      <div class="step-progress">
+        <div class="sp-wrap">
+          <div class="sp-dot active" id="sp1">1</div>
+          <div class="sp-label">DECIFRA</div>
+        </div>
+        <div class="sp-line"></div>
+        <div class="sp-wrap">
+          <div class="sp-dot" id="sp2">2</div>
+          <div class="sp-label">RIVELA</div>
+        </div>
+      </div>
+
+      <!-- ============ STEP 1: LEET SPEAK ============ -->
+      <div class="step-section active" id="step1">
+
+        <div class="mission-box">
+          <h3>🎯 FASE 1 — DECIFRA IL MESSAGGIO DI NYX</h3>
+          <p>Abbiamo intercettato questo messaggio che Nyx ha inviato ai suoi complici. Trovate la parola chiave nascosta nel testo per sbloccare la fase 2.</p>
+        </div>
+
+        <div class="intercept-msg">
+          <p>Agenti,</p>
+          <p>il li22ello di accesso al s9stema centrale è stato compromesso stanotte. Ignoriamo chi sia il responsabile ma il danno è reale.</p>
+          <p>Il nostro 18ilevamento interno ha identificato un intruso nelle ultime sei ore. I log sono stati manomessi.</p>
+          <p>Dobbiamo passare immediatamente al n21ovo protocollo operativo. Nessuna comunicazione in chiaro da questo momento in avanti.</p>
+          <p>La 19icurezza del gruppo dipende dalla vostra discrezione. Solo canali cifrati. Attendete istruzioni.</p>
+          <p style="text-align: right; margin-top: 12px;">— N.</p>
+        </div>
+
+
+        <div class="mission-box" style="margin-top: 25px;">
+          <h3>🔑 INSERISCI LA PAROLA CHIAVE</h3>
+          <div class="input-group">
+            <input type="text" id="keyword" placeholder="Parola chiave..." style="text-transform: uppercase;" autocomplete="off">
+          </div>
+          <button class="btn" onclick="checkKeyword()">🔓 VERIFICA E SBLOCCA FASE 2</button>
+        </div>
+
+        <div class="text-center" style="margin-top: 20px;">
+          <button class="btn btn-secondary" id="hintBtn" onclick="showHint()">💡 MI SERVE UN AIUTO</button>
+        </div>
+        <div class="tip-box" id="hintBox" style="display:none; margin-top: 15px;">
+          <h4>💡 AIUTO</h4>
+          <p>Guardate bene le parole del messaggio: in alcune ci sono <strong>dei numeri nascosti in mezzo alle lettere</strong>. Annotateli nell'ordine in cui compaiono.</p>
+          <p>Ogni numero indica la <strong>posizione di una lettera nell'alfabeto</strong>: A = 1, B = 2, C = 3 … fino alla Z. Quando avete tutte le lettere, leggetele in fila: formano la parola chiave.</p>
+          <p style="margin-bottom: 0; color: var(--text-dim); font-size: 0.9em;">Attenzione: due cifre attaccate formano <strong>un solo numero</strong> (per esempio 22 è un numero solo, non "2" e "2").</p>
+        </div>
+
+        <div id="message1"></div>
+      </div><!-- /step1 -->
+
+      <!-- ============ STEP 2: SLIDER IMMAGINE ============ -->
+      <div class="step-section" id="step2">
+
+        <div class="narration">
+          <p>Ottimo! Ora l'ultima parte. Nyx ha inviato ai complici una <strong>foto apparentemente innocua</strong>. Ma dentro questa immagine c'è una <strong>parola nascosta</strong>: rivelala per ottenere l'ultimo codice.</p>
+        </div>
+
+        <div class="tip-box">
+          <h4>💡 COME RIVELARE IL MESSAGGIO</h4>
+          <p>A occhio nudo non si vede niente di chiaro... ma puoi <strong>modificare contrasto, luminosità e saturazione</strong> con i comandi a destra dell'immagine. Sposta gli slider e vedi cosa appare!</p>
+        </div>
+
+        <div class="stego-workspace">
+          <div class="stego-image-wrapper">
+            <img src="assets/img/messaggio_nyx.png" alt="Messaggio cifrato di Nyx" id="stegoImg">
+          </div>
+
+          <div class="stego-controls">
+            <h3>🔧 ANALISI IMMAGINE</h3>
+            <div class="control-group">
+              <label>CONTRASTO <span id="contrastVal">100%</span></label>
+              <input type="range" id="contrast" min="70" max="300" value="100">
+            </div>
+            <div class="control-group">
+              <label>LUMINOSITÀ <span id="brightnessVal">100%</span></label>
+              <input type="range" id="brightness" min="100" max="300" value="100">
+            </div>
+            <div class="control-group">
+              <label>SATURAZIONE <span id="saturateVal">100%</span></label>
+              <input type="range" id="saturate" min="0" max="300" value="100">
+            </div>
+            <button class="reset-btn" onclick="resetFilters()">🔄 RESET</button>
+          </div>
+        </div>
+
+        <div class="mission-box">
+          <h3>✅ INSERISCI LA PAROLA NASCOSTA</h3>
+          <p>Quando l'hai vista chiaramente, scrivila qui sotto:</p>
+          <div class="input-group">
+            <input type="text" id="solution" placeholder="Parola nascosta..." style="text-transform: uppercase;" autocomplete="off">
+          </div>
+          <button class="btn" onclick="checkSolution()">VERIFICA</button>
+        </div>
+
+        <div id="message"></div>
+        <div id="codeReveal"></div>
+        <div id="nextBtn"></div>
+
+        <div class="tip-box" style="margin-top: 30px; background: rgba(255,46,154,0.05); border-color: var(--neon-pink);">
+          <h4 style="color: var(--neon-pink);">🛡️ DEBRIEF — Cosa abbiamo imparato</h4>
+          <p style="margin-bottom: 0;">La <strong>steganografia</strong> è l'arte di nascondere un messaggio dentro un altro file (immagine, audio, video, testo). I criminali la usano per comunicare di nascosto. Il <strong>leet speak</strong> è invece una tecnica per offuscare le parole sostituendo lettere con numeri o simboli simili. Entrambe le tecniche dimostrano che le informazioni possono essere nascoste ovunque — anche dove non te lo aspetti!</p>
+        </div>
+
+      </div><!-- /step2 -->
+
+    </div><!-- /card -->
+
+    <div id="codesTracker"></div>
+  </div>
+
+  <script src="assets/js/scudo.js"></script>
+  <script>
+    SCUDO.guard('prova', 5);
+    document.getElementById('header').innerHTML = SCUDO.renderHeader();
+    document.getElementById('progress').innerHTML = SCUDO.renderProgressBar(5);
+    document.getElementById('codesTracker').innerHTML = SCUDO.renderCodesTracker();
+
+    // ============ STEP INDICATOR ============
+
+    function setStepDone(num) {
+      const dot = document.getElementById('sp' + num);
+      dot.classList.remove('active');
+      dot.classList.add('done');
+      dot.textContent = '✓';
+      const next = document.getElementById('sp' + (num + 1));
+      if (next) next.classList.add('active');
+    }
+
+    // ============ STEP 1: PAROLA CHIAVE ============
+
+    const KEYWORD = 'VIRUS';
+
+    document.getElementById('keyword').addEventListener('keypress', e => {
+      if (e.key === 'Enter') checkKeyword();
+    });
+
+    function checkKeyword() {
+      const val = document.getElementById('keyword').value.trim().toUpperCase();
+      if (!val) {
+        SCUDO.showMessage('message1', 'error', '❌ Inserite la parola chiave!');
+        return;
+      }
+      if (val === KEYWORD) {
+        SCUDO.showMessage('message1', 'success', '🔓 PAROLA CORRETTA! Fase 2 sbloccata...');
+        setStepDone(1);
+        setTimeout(() => {
+          document.getElementById('step1').classList.remove('active');
+          document.getElementById('step2').classList.add('active');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 1500);
+      } else {
+        SCUDO.showMessage('message1', 'error', '❌ Non è la parola giusta. Rileggete il messaggio con attenzione!');
+      }
+    }
+
+    function showHint() {
+      document.getElementById('hintBox').style.display = 'block';
+      document.getElementById('hintBtn').style.display = 'none';
+    }
+
+    // ============ STEP 2: SLIDER ============
+
+    const img = document.getElementById('stegoImg');
+    const contrast = document.getElementById('contrast');
+    const brightness = document.getElementById('brightness');
+    const saturate = document.getElementById('saturate');
+
+    function applyFilters() {
+      const c = contrast.value;
+      const b = brightness.value;
+      const s = saturate.value;
+      img.style.filter = `contrast(${c}%) brightness(${b}%) saturate(${s}%)`;
+      document.getElementById('contrastVal').textContent = c + '%';
+      document.getElementById('brightnessVal').textContent = b + '%';
+      document.getElementById('saturateVal').textContent = s + '%';
+    }
+
+    contrast.addEventListener('input', applyFilters);
+    brightness.addEventListener('input', applyFilters);
+    saturate.addEventListener('input', applyFilters);
+
+    function resetFilters() {
+      contrast.value = 100;
+      brightness.value = 100;
+      saturate.value = 100;
+      applyFilters();
+    }
+
+    document.getElementById('solution').addEventListener('keypress', e => {
+      if (e.key === 'Enter') checkSolution();
+    });
+
+    function checkSolution() {
+      const sol = document.getElementById('solution').value.trim().toUpperCase();
+      const correct = SCUDO.SOLUTIONS[5];
+      if (sol === correct) {
+        SCUDO.showMessage('message', 'success', '✅ INCREDIBILE! Hai svelato il messaggio nascosto.');
+        setStepDone(2);
+        revealCode();
+      } else if (sol) {
+        SCUDO.showMessage('message', 'error', '❌ Non è la parola giusta. Prova ad alzare il contrasto al massimo!');
+      } else {
+        SCUDO.showMessage('message', 'error', '❌ Inserisci la parola che hai visto!');
+      }
+    }
+
+    function revealCode() {
+      const code = SCUDO.CODES[5];
+      SCUDO.saveCode(5, code);
+      document.getElementById('codeReveal').innerHTML = `
+        <div class="code-reveal">
+          <div class="label">🎯 QUINTO E ULTIMO CODICE CASSAFORTE</div>
+          <div class="code">${code}</div>
+          <div class="reminder">📝 Hai tutti e 5 i codici! È ora di aprire la cassaforte!</div>
+        </div>
+      `;
+      document.getElementById('nextBtn').innerHTML = `
+        <div class="text-center mt-20">
+          <a href="cassaforte.html" class="btn btn-success btn-large">🔓 APRI LA CASSAFORTE FINALE →</a>
+        </div>
+      `;
+      document.getElementById('codesTracker').innerHTML = SCUDO.renderCodesTracker();
+    }
+  </script>
+</body>
+</html>

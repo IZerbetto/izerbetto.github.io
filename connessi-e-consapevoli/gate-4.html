@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accesso Bloccato | Agenzia Scudo</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div id="header"></div>
+
+    <div class="card">
+      <div class="gate-icon">🔒</div>
+      <h1>ACCESSO BLOCCATO</h1>
+
+      <div class="narration text-center">
+        <p>Stai entrando in <strong>Zona di Sicurezza Livello 4</strong>.</p>
+        <p>Per procedere alla prossima prova serve il <strong>codice di autorizzazione</strong>.</p>
+        <p style="color: var(--neon-pink);">📞 Chiedi a chi conduce il laboratorio il codice di accesso!</p>
+      </div>
+
+      <div class="input-group">
+        <label for="gateCode">CODICE DI AUTORIZZAZIONE</label>
+        <input type="text" id="gateCode" placeholder="Inserisci il codice che ti ha dato chi conduce il laboratorio" autocomplete="off" style="text-transform: uppercase;">
+      </div>
+
+      <div class="text-center">
+        <button class="btn btn-large" onclick="checkGate()">🔓 SBLOCCA</button>
+      </div>
+
+      <div id="message"></div>
+    </div>
+
+    <div class="text-center" style="margin-top: 20px;">
+      <a href="prova-3.html" class="btn btn-secondary">← Torna alla Prova 3</a>
+    </div>
+  </div>
+
+  <script src="assets/js/scudo.js"></script>
+  <script>
+    SCUDO.guard('gate', 4);
+    document.getElementById('header').innerHTML = SCUDO.renderHeader();
+
+    const GATE_NUM = 4;
+    const NEXT_PAGE = 'prova-4.html';
+
+    function checkGate() {
+      const code = document.getElementById('gateCode').value.trim().toUpperCase();
+      const expected = SCUDO.GATE_CODES[GATE_NUM];
+
+      if (code === expected) {
+        SCUDO.passGate(GATE_NUM);
+        SCUDO.showMessage('message', 'success', '✅ ACCESSO AUTORIZZATO. Reindirizzamento in corso...');
+        setTimeout(() => SCUDO.goTo(NEXT_PAGE), 1200);
+      } else {
+        SCUDO.showMessage('message', 'error', '❌ CODICE ERRATO. Chiedi a chi conduce il laboratorio!');
+      }
+    }
+
+    document.getElementById('gateCode').addEventListener('keypress', e => {
+      if (e.key === 'Enter') checkGate();
+    });
+  </script>
+</body>
+</html>
